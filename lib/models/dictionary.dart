@@ -1,152 +1,239 @@
-import 'dart:convert';
-import 'dart:math';
-
+import "dart:convert";
+import "dart:math";
 import 'package:flutter/services.dart' show rootBundle;
+import "verb.dart";
+import "conjugation.dart";
+import "enums.dart";
 
-/// Simple helper to load JSON dictionaries from assets.
-///
-/// Currently provides loading for `assets/dictionaries/verbs.json` and
-/// caches the parsed Map so subsequent calls are fast.
 class Dictionary {
-  /// The verbs dictionary loaded from `assets/dictionaries/verbs.json`.
-  final Map<String, dynamic> verbs;
-  final Map<String, dynamic> conjugationRules;
+  final String verbsFile = "assets/dictionaries/verbs.json";
+  final String conjugationsFile = "assets/dictionaries/conjugations.json";
+  late Map<String, Verb> verbs;
+  late Map<String, Conjugation> conjugations;
 
-  final Map<String, List<String>> moods = {
-    "infinitive": ["infinitive-present"],
-    "indicative": ["present", "imperfect", "future", "simple-past"],
-    "conditional": ["present"],
-    "subjunctive": ["present", "imperfect"],
-    "imperative": ["imperative-present"],
-    "participle": ["present-participle", "past-participle"],
-  };
-
-  final Map<String, List<String>> tenses = {
-    "infinitive-present": ["none"],
-    "present": ["je", "tu", "il", "elle", "on", "nous", "vous", "ils", "elles"],
-    "imperfect": [
-      "je",
-      "tu",
-      "il",
-      "elle",
-      "on",
-      "nous",
-      "vous",
-      "ils",
-      "elles",
-    ],
-    "future": ["je", "tu", "il", "elle", "on", "nous", "vous", "ils", "elles"],
-    "simple-past": [
-      "je",
-      "tu",
-      "il",
-      "elle",
-      "on",
-      "nous",
-      "vous",
-      "ils",
-      "elles",
-    ],
-    "imperative-present": ["(tu)", "(nous)", "(vous)"],
-    "present-participle": ["(gérondif)"],
-    "past-participle": ["(m.)", "(f.)", "(m.pl.)", "(f.pl.)"],
-  };
-
-  final Map<String, int> persons = {
-    "none": 0,
-    "je": 0,
-    "tu": 1,
-    "il": 2,
-    "elle": 2,
-    "on": 2,
-    "nous": 3,
-    "vous": 4,
-    "ils": 5,
-    "elles": 5,
-    "(tu)": 0,
-    "(nous)": 1,
-    "(vous)": 2,
-    "(gérondif)": 0,
-    "(m.)": 0,
-    "(f.)": 1,
-    "(m.pl.)": 2,
-    "(f.pl.)": 3,
-  };
-
-  Dictionary(this.verbs, this.conjugationRules);
-
-  static const String _verbsAsset = 'assets/dictionaries/verbs.json';
-  static const String _conjugationAsset =
-      'assets/dictionaries/conjugations.json';
-
-  // Internal cache to avoid repeatedly reading/parsing the asset.
-  static Map<String, dynamic>? _verbsCache;
-  static Map<String, dynamic>? _conjugationCache;
-
-  // Global Random used when a caller doesn't provide one. Exposed as static
-  // so tests can inject a seeded Random if deterministic behavior is needed.
-  static final Random _globalRandom = Random();
-
-  /// Async factory that returns a `Dictionary` instance whose [verbs]
-  /// property contains the parsed JSON from the verbs asset.
-  ///
-  /// Uses an in-memory cache by default to avoid reloading the asset. Set
-  /// [forceReload] to true to re-read the asset and update the cache.
-  static Future<Dictionary> load({bool forceReload = false}) async {
-    if (_verbsCache == null || forceReload) {
-      final jsonString = await rootBundle.loadString(_verbsAsset);
-      final parsed = jsonDecode(jsonString);
-
-      if (parsed is Map<String, dynamic>) {
-        _verbsCache = parsed;
-      } else {
-        throw FormatException(
-          'Expected a JSON object at top level in $_verbsAsset',
-        );
-      }
+  Map<String, Verb> _parseVerbs(dynamic decoded) {
+    if (decoded is Map<String, dynamic>) {
+      return decoded.map(
+        (k, v) => MapEntry(k, Verb.fromJson(v as Map<String, dynamic>)),
+      );
     }
 
-    if (_conjugationCache == null || forceReload) {
-      final jsonString = await rootBundle.loadString(_conjugationAsset);
-      final parsed = jsonDecode(jsonString);
-
-      if (parsed is Map<String, dynamic>) {
-        _conjugationCache = parsed;
-      } else {
-        throw FormatException(
-          'Expected a JSON object at top level in $_conjugationAsset',
-        );
+    if (decoded is List) {
+      final map = <String, Verb>{};
+      for (final item in decoded) {
+        if (item is Map<String, dynamic>) {
+          final verb = Verb.fromJson(item);
+          // use the verb.type as the key when input is a list
+          map[verb.type] = verb;
+        }
       }
+      return map;
     }
 
-    return Dictionary(
-      Map<String, dynamic>.from(_verbsCache!),
-      Map<String, dynamic>.from(_conjugationCache!),
+    throw FormatException(
+      'Unexpected JSON structure for verbs.json: ${decoded.runtimeType}',
     );
   }
 
-  /// Returns a randomly selected verb entry from the loaded verbs map.
-  ///
-  /// The returned value is a [MapEntry] where the `key` is the verb's
-  /// top-level identifier (likely the infinitive) and `value` is the
-  /// associated JSON object. An optional [random] can be provided for
-  /// deterministic selection in tests.
-  MapEntry<String, dynamic> randomVerb([Random? random]) {
-    if (verbs.isEmpty) {
-      throw StateError('No verbs available in this Dictionary instance.');
+  Map<String, Conjugation> _parseConjugations(dynamic decoded) {
+    if (decoded is Map<String, dynamic>) {
+      return decoded.map(
+        (k, v) => MapEntry(k, Conjugation.fromJson(v as Map<String, dynamic>)),
+      );
+    }
+    if (decoded is List) {
+      final map = <String, Conjugation>{};
+      for (final item in decoded) {
+        if (item is Map<String, dynamic>) {
+          // If the item is a single-entry map like {"verb": { ... }}, use that key.
+          if (item.length == 1) {
+            final key = item.keys.first;
+            final value = item.values.first as Map<String, dynamic>;
+            map[key] = Conjugation.fromJson(value);
+            continue;
+          }
+
+          // If the item contains an explicit identifier field, use it as the key.
+          if (item.containsKey('type')) {
+            map[item['type'] as String] = Conjugation.fromJson(item);
+            continue;
+          }
+
+          // Unable to determine a key for this list item; skip it.
+        }
+      }
+      return map;
     }
 
-    final r = random ?? _globalRandom;
-    final keys = verbs.keys.toList(growable: false);
-    final selectedKey = keys[r.nextInt(keys.length)];
-    return MapEntry(selectedKey, verbs[selectedKey]);
+    throw FormatException(
+      'Unexpected JSON structure for conjugations.json: ${decoded.runtimeType}',
+    );
   }
 
-  /// Returns the cached verbs map if already loaded, otherwise null.
-  ///
-  /// Note: this returns the cached instance (not the instance field), so
-  /// callers should prefer creating a `Dictionary` via [load] which will
-  /// copy the cached map into the instance.
-  static Map<String, dynamic>? get cachedVerbs => _verbsCache;
-  static Map<String, dynamic>? get cachedConjugationRules => _conjugationCache;
+  List<String>? _getConjugation(
+    String verb,
+    MOOD mood,
+    TENSE tense,
+    FORM form,
+  ) {
+    String verbEnding = verbs[verb]?.type.split(":").last ?? "";
+    String verbRoot = verb.substring(0, verb.length - verbEnding.length);
+    List<String>? variants = conjugations[verbs[verb]?.type]
+        ?.moods[mood.value]
+        ?.tenses[tense.value]
+        ?.forms[form.value]
+        .variants;
+
+    // Return null when there are no variants (null or empty list)
+    if (variants == null || variants.isEmpty) return null;
+
+    List<String> conjugatedVariants = List.from(
+      variants,
+    ).map((v) => "${verbRoot}${v}").toList();
+
+    // print("${verb}: ${verbs[verb]}");
+    // print("verbtype: ${verbs[verb]?.type}");
+    // print("verb infinitive ending: $verbEnding");
+    // print("verb root: $verbRoot");
+    // print("definitions: ${verbs[verb]?.definitions.join('; ')}");
+    // print("conjugated endings: ${variants}");
+
+    return conjugatedVariants;
+  }
+
+  Map<FORM, List<String>?>? getConjugation(
+    String verb,
+    MOOD mood,
+    TENSE tense,
+    FORM form,
+  ) {
+    List<String>? c = _getConjugation(verb, mood, tense, form);
+
+    if (c != null) {
+      return {form: c};
+    } else {
+      return null;
+    }
+  }
+
+  Map<FORM, List<String>?>? conjugateTense(
+    String verb,
+    MOOD mood,
+    TENSE tense, [
+    bool allForms = false,
+  ]) {
+    Map<FORM, List<String>?> conjugatedForms = {};
+
+    for (FORM form in allForms ? tense.forms : tense.conjugationForms) {
+      List<String>? c = _getConjugation(verb, mood, tense, form);
+      if (c != null) {
+        conjugatedForms[form] = c;
+      }
+    }
+
+    if (conjugatedForms.isEmpty) {
+      return null;
+    } else {
+      return conjugatedForms;
+    }
+  }
+
+  Map<TENSE, Map<FORM, List<String>?>>? conjugateMood(
+    String verb,
+    MOOD mood, [
+    bool allForms = false,
+  ]) {
+    Map<TENSE, Map<FORM, List<String>?>> conjugatedTenses = {};
+
+    for (TENSE tense in mood.tenses) {
+      Map<FORM, List<String>?>? t = conjugateTense(verb, mood, tense, allForms);
+      if (t != null) {
+        conjugatedTenses[tense] = t;
+      }
+    }
+
+    if (conjugatedTenses.isEmpty) {
+      return null;
+    } else {
+      return conjugatedTenses;
+    }
+  }
+
+  Map<MOOD, Map<TENSE, Map<FORM, List<String>?>>>? conjugateVerb(
+    String verb, [
+    bool allForms = false,
+  ]) {
+    Map<MOOD, Map<TENSE, Map<FORM, List<String>?>>> conjugatedVerb = {};
+
+    for (MOOD mood in MOOD.values) {
+      Map<TENSE, Map<FORM, List<String>?>>? m = conjugateMood(
+        verb,
+        mood,
+        allForms,
+      );
+      if (m != null) {
+        conjugatedVerb[mood] = m;
+      }
+    }
+
+    if (conjugatedVerb.isEmpty) {
+      return null;
+    } else {
+      return conjugatedVerb;
+    }
+  }
+
+  Verb getRandomVerb() {
+    final rand = Random();
+    final index = rand.nextInt(verbs.length);
+    return verbs.values.elementAt(index);
+  }
+
+  Map<String, dynamic> getQuestion() {
+    final verb = getRandomVerb();
+    final conjugated = conjugateVerb(verb.verb, true);
+
+    final rand = Random();
+    // Select a random mood
+    List<MOOD> moods = conjugated!.keys.toList();
+    MOOD mood = moods[rand.nextInt(moods.length)];
+
+    // Select a random tense
+    List<TENSE> tenses = conjugated[mood]!.keys.toList();
+    TENSE tense = tenses[rand.nextInt(tenses.length)];
+
+    // Select a random form
+    List<FORM> forms = conjugated[mood]![tense]!.keys.toList();
+    FORM form = forms[rand.nextInt(forms.length)];
+
+    // Get the conjugated variants
+    Map<String, dynamic> question = {
+      "verb": verb,
+      "mood": mood,
+      "tense": tense,
+      "form": form,
+      "conjugation": conjugated[mood]![tense]![form],
+    };
+
+    return question;
+  }
+
+  // private constructor
+  Dictionary._();
+
+  static Future<Dictionary> load() async {
+    final dict = Dictionary._();
+
+    final verbsJsonString = await rootBundle.loadString(dict.verbsFile);
+    final verbsJson = jsonDecode(verbsJsonString);
+    dict.verbs = dict._parseVerbs(verbsJson);
+
+    final conjugationsJsonString = await rootBundle.loadString(
+      dict.conjugationsFile,
+    );
+    final conjugationsJson = jsonDecode(conjugationsJsonString);
+    dict.conjugations = dict._parseConjugations(conjugationsJson);
+
+    return dict;
+  }
 }
