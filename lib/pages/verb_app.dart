@@ -64,19 +64,27 @@ class _VerbAppWidgetState extends State<VerbAppWidget> {
   bool _questionMode = false;
 
   // Current verb infinitive to conjugate
-  String _verb = "verbe";
-  String _definition = "definition";
+  String _verb = "";
+  String _definition = "";
   // Whether the definition is revealed - toggleable by the user
   bool _definitionIsRevealed = false;
 
-  String _mood = "indicative";
-  String _tense = "present";
-  String _person = "je";
+  String _mood = "";
+  String _tense = "";
+  String _person = "";
+  String _pronoun = "";
+
+  List<String> _correctAnswers = [];
+
+  bool? _correct;
+  String? _errorText;
 
   final TextEditingController _inputController = TextEditingController();
   final FocusNode _inputFocusNode = FocusNode();
 
-  final dictionary = Dictionary.load();
+  // final dictionary = await Dictionary.load();
+  Dictionary? dictionary;
+  bool _dictionaryLoaded = false;
 
   void _handleDefinitionToggle() {
     setState(() {
@@ -89,35 +97,57 @@ class _VerbAppWidgetState extends State<VerbAppWidget> {
     setState(() {
       _questionMode = !_questionMode;
     });
-    debugPrint("Toggled state: questionMode=$_questionMode");
+
     if (_questionMode) {
       // Question mode - Load a new verb to conjugate
-      dictionary.then((dict) {
-        final entry = dict.randomVerb();
-        // debugPrint("Selected verb: ${entry.key}");
-        // debugPrint("Selected definition: ${entry.value['definitions']}");
-        setState(() {
-          _verb = entry.key;
-          _definition =
-              entry.value['definitions'].join(" • ") ??
-              'No definition available';
-          _definitionIsRevealed = false;
 
-          // For now, we keep mood, tense, person constant here
-          _mood = "indicative";
-          _tense = "present";
-          _person = "je";
+      if (!_dictionaryLoaded || dictionary == null) {
+        // dictionary not ready yet
+        return;
+      }
 
-          // Clear the input field
-          _inputController.text = "";
-          _inputFocusNode.requestFocus();
-        });
+      final q = dictionary!.getQuestion();
+      // debugPrint('Expected answer(s): ${q['conjugation']}');
+
+      setState(() {
+        _verb = q['verb'].verb;
+        _definition =
+            q['verb'].definitions.join(" • ") ?? 'No definition available';
+        _definitionIsRevealed = false;
+        _mood = q['mood'].french;
+        _tense = q['tense'].french;
+        _person = q['form'].french;
+        _pronoun = q['form'].prefix;
+        _correctAnswers = q['conjugation'];
+        _correct = null;
+        _errorText = null;
+
+        // Clear the input field
+        _inputController.text = "";
+        _inputFocusNode.requestFocus();
       });
     } else {
-      // Answer mode - reveal the definition
+      // Answer mode - check the answer and reveal the definition
+
+      final isCorrect = _correctAnswers.any(
+        (ans) => ans.trim().toLowerCase() == _inputController.text,
+      );
+
       setState(() {
         _definitionIsRevealed = true;
         _inputFocusNode.requestFocus();
+
+        if (_inputController.text.isEmpty) {
+          _inputController.text = _correctAnswers.join(" / ");
+          _correct = null;
+        } else {
+          _correct = isCorrect;
+          if (!isCorrect) {
+            _errorText = _correctAnswers.join(" / ");
+          } else {
+            _errorText = null;
+          }
+        }
       });
     }
   }
@@ -125,8 +155,13 @@ class _VerbAppWidgetState extends State<VerbAppWidget> {
   @override
   void initState() {
     super.initState();
-    // Run once after the first frame so _handleSubmit's setState is safe.
-    WidgetsBinding.instance.addPostFrameCallback((_) => _handleSubmit());
+
+    // Load dictionary, then run _handleSubmit once the first frame is ready.
+    Dictionary.load().then((dict) {
+      dictionary = dict;
+      _dictionaryLoaded = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) => _handleSubmit());
+    });
   }
 
   @override
@@ -155,12 +190,24 @@ class _VerbAppWidgetState extends State<VerbAppWidget> {
             PersonWidget(person: _person),
           ],
         ),
-        InputWidget(
-          controller: _inputController,
-          focusNode: _inputFocusNode,
-          onSubmit: _handleSubmit,
+        Row(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: InputWidget(
+                  controller: _inputController,
+                  focusNode: _inputFocusNode,
+                  onSubmit: _handleSubmit,
+                  pronoun: _pronoun,
+                  correct: _correct,
+                  errorText: _errorText,
+                ),
+              ),
+            ),
+            InputButtonWidget(onSubmit: _handleSubmit),
+          ],
         ),
-        InputButtonWidget(onSubmit: _handleSubmit),
       ],
     );
     return w;
