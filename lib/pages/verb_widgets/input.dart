@@ -67,6 +67,7 @@ class _InputWidgetState extends State<InputWidget> {
         suffixIcon: suffixIcon,
         errorText: widget.errorText,
       ),
+      hintLocales: [Locale('fr', 'FR')],
     );
   }
 
