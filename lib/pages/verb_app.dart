@@ -76,6 +76,9 @@ class _VerbAppWidgetState extends State<VerbAppWidget> {
 
   List<String> _correctAnswers = [];
 
+  bool? _correct;
+  String? _errorText;
+
   final TextEditingController _inputController = TextEditingController();
   final FocusNode _inputFocusNode = FocusNode();
 
@@ -116,6 +119,8 @@ class _VerbAppWidgetState extends State<VerbAppWidget> {
         _person = q['form'].french;
         _pronoun = q['form'].prefix;
         _correctAnswers = q['conjugation'];
+        _correct = null;
+        _errorText = null;
 
         // Clear the input field
         _inputController.text = "";
@@ -128,13 +133,21 @@ class _VerbAppWidgetState extends State<VerbAppWidget> {
         (ans) => ans.trim().toLowerCase() == _inputController.text,
       );
 
-      if (_inputController.text.isEmpty) {
-        _inputController.text = _correctAnswers.join(" / ");
-      }
-
       setState(() {
         _definitionIsRevealed = true;
         _inputFocusNode.requestFocus();
+
+        if (_inputController.text.isEmpty) {
+          _inputController.text = _correctAnswers.join(" / ");
+          _correct = null;
+        } else {
+          _correct = isCorrect;
+          if (!isCorrect) {
+            _errorText = _correctAnswers.join(" / ");
+          } else {
+            _errorText = null;
+          }
+        }
       });
     }
   }
@@ -187,6 +200,8 @@ class _VerbAppWidgetState extends State<VerbAppWidget> {
                   focusNode: _inputFocusNode,
                   onSubmit: _handleSubmit,
                   pronoun: _pronoun,
+                  correct: _correct,
+                  errorText: _errorText,
                 ),
               ),
             ),

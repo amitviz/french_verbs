@@ -7,12 +7,16 @@ class InputWidget extends StatefulWidget {
   final FocusNode? focusNode;
   final VoidCallback onSubmit;
   final String pronoun;
+  final bool? correct;
+  final String? errorText;
   const InputWidget({
     super.key,
     this.controller,
     this.focusNode,
     required this.onSubmit,
     required this.pronoun,
+    this.correct,
+    this.errorText,
   });
 
   @override
@@ -37,6 +41,15 @@ class _InputWidgetState extends State<InputWidget> {
   @override
   Widget build(BuildContext context) {
     userInput = _controller.text;
+    bool? isUserCorrect = widget.correct;
+    Icon? suffixIcon;
+    if (isUserCorrect == true) {
+      suffixIcon = Icon(Icons.check_circle, color: Colors.green);
+    } else if (isUserCorrect == false) {
+      suffixIcon = Icon(Icons.cancel, color: Colors.red);
+    } else {
+      suffixIcon = null;
+    }
     return TextField(
       controller: _controller,
       focusNode: widget.focusNode,
@@ -51,6 +64,8 @@ class _InputWidgetState extends State<InputWidget> {
         labelText: "",
         border: OutlineInputBorder(),
         prefixText: _prefixText(),
+        suffixIcon: suffixIcon,
+        errorText: widget.errorText,
       ),
     );
   }
