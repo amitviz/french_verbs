@@ -65,13 +65,16 @@ class _VerbAppWidgetState extends State<VerbAppWidget> {
 
   // Current verb infinitive to conjugate
   String _verb = "";
-  String _definition = "definition";
+  String _definition = "";
   // Whether the definition is revealed - toggleable by the user
   bool _definitionIsRevealed = false;
 
   String _mood = "";
   String _tense = "";
   String _person = "";
+  String _pronoun = "";
+
+  List<String> _correctAnswers = [];
 
   final TextEditingController _inputController = TextEditingController();
   final FocusNode _inputFocusNode = FocusNode();
@@ -99,7 +102,10 @@ class _VerbAppWidgetState extends State<VerbAppWidget> {
         // dictionary not ready yet
         return;
       }
+
       final q = dictionary!.getQuestion();
+      // debugPrint('Expected answer(s): ${q['conjugation']}');
+
       setState(() {
         _verb = q['verb'].verb;
         _definition =
@@ -108,6 +114,8 @@ class _VerbAppWidgetState extends State<VerbAppWidget> {
         _mood = q['mood'].french;
         _tense = q['tense'].french;
         _person = q['form'].french;
+        _pronoun = q['form'].prefix;
+        _correctAnswers = q['conjugation'];
 
         // Clear the input field
         _inputController.text = "";
@@ -115,6 +123,15 @@ class _VerbAppWidgetState extends State<VerbAppWidget> {
       });
     } else {
       // Answer mode - check the answer and reveal the definition
+
+      final isCorrect = _correctAnswers.any(
+        (ans) => ans.trim().toLowerCase() == _inputController.text,
+      );
+
+      if (_inputController.text.isEmpty) {
+        _inputController.text = _correctAnswers.join(" / ");
+      }
+
       setState(() {
         _definitionIsRevealed = true;
         _inputFocusNode.requestFocus();
@@ -125,8 +142,6 @@ class _VerbAppWidgetState extends State<VerbAppWidget> {
   @override
   void initState() {
     super.initState();
-    // // Run once after the first frame so _handleSubmit's setState is safe.
-    // WidgetsBinding.instance.addPostFrameCallback((_) => _handleSubmit());
 
     // Load dictionary, then run _handleSubmit once the first frame is ready.
     Dictionary.load().then((dict) {
@@ -162,12 +177,22 @@ class _VerbAppWidgetState extends State<VerbAppWidget> {
             PersonWidget(person: _person),
           ],
         ),
-        InputWidget(
-          controller: _inputController,
-          focusNode: _inputFocusNode,
-          onSubmit: _handleSubmit,
+        Row(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: InputWidget(
+                  controller: _inputController,
+                  focusNode: _inputFocusNode,
+                  onSubmit: _handleSubmit,
+                  pronoun: _pronoun,
+                ),
+              ),
+            ),
+            InputButtonWidget(onSubmit: _handleSubmit),
+          ],
         ),
-        InputButtonWidget(onSubmit: _handleSubmit),
       ],
     );
     return w;

@@ -1,6 +1,6 @@
 enum FORM {
   infinitive(value: 0, french: "", prefix: ""),
-  je(value: 0, french: "je", prefix: "je"),
+  je(value: 0, french: "je", prefix: "je "),
   tu(value: 1, french: "tu", prefix: "tu "),
   il(value: 2, french: "il", prefix: "il "),
   elle(value: 2, french: "elle", prefix: "elle "),
