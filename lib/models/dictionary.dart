@@ -263,8 +263,7 @@ class Dictionary {
     final conjugationsJson = jsonDecode(conjugationsJsonString);
     dict.conjugations = dict._parseConjugations(conjugationsJson);
 
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    dict.selectedVerbs = prefs.getStringList('selectedVerbs');
+    dict.refreshPreferences();
 
     return dict;
   }
