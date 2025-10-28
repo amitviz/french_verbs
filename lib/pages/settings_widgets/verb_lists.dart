@@ -1,7 +1,11 @@
 import "package:flutter/material.dart";
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:french_verbs/models/verb_list.dart';
+import 'package:french_verbs/models/verb_lists.dart' as model_verb_lists;
 
 class VerbLists extends StatefulWidget {
+  final String verbListsFile = "assets/verb_lists/verb_lists.json";
   const VerbLists({super.key});
 
   @override
@@ -9,6 +13,8 @@ class VerbLists extends StatefulWidget {
 }
 
 class _VerbListsState extends State<VerbLists> {
+  // Parsed verb lists loaded from assets
+  model_verb_lists.VerbLists? verbLists;
   bool a1Checked = false;
   bool a2Checked = false;
   bool b1Checked = false;
@@ -21,6 +27,29 @@ class _VerbListsState extends State<VerbLists> {
     super.initState();
     // Load saved checkbox values (if any) when the widget initializes.
     loadSharedPrefs();
+    // Load verb lists JSON from assets into the `verbLists` model.
+    // We call the async loader without awaiting here because initState
+    // cannot be async — the loader will call setState when complete.
+    loadVerbLists();
+  }
+
+  Future<void> loadVerbLists() async {
+    try {
+      final String jsonString = await rootBundle.loadString(
+        widget.verbListsFile,
+      );
+      final model_verb_lists.VerbLists lists =
+          model_verb_lists.VerbLists.fromJson(jsonString);
+      setState(() {
+        verbLists = lists;
+      });
+    } catch (e) {
+      // If loading/parsing fails, keep verbLists as null and optionally log.
+      // In production code consider reporting this to analytics or showing
+      // an error state in the UI.
+      // ignore: avoid_print
+      print('Failed to load verb lists: $e');
+    }
   }
 
   Future<void> loadSharedPrefs() async {
@@ -42,6 +71,7 @@ class _VerbListsState extends State<VerbLists> {
   Future<void> setSharedPrefs() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
+    // The list of which verbLists are selected
     final List<String> list = [
       a1Checked.toString(),
       a2Checked.toString(),
@@ -52,6 +82,31 @@ class _VerbListsState extends State<VerbLists> {
     ];
 
     await prefs.setStringList('verbLists', list);
+
+    // The actual list of verbs selected
+    // List<String> verbs = [];
+    VerbList verbs = VerbList.fromJson("[]");
+
+    if (a1Checked) {
+      verbs.verbs.addAll(verbLists?.verbLists['a1']?.verbs ?? []);
+    }
+    if (a2Checked) {
+      verbs.verbs.addAll(verbLists?.verbLists['a2']?.verbs ?? []);
+    }
+    if (b1Checked) {
+      verbs.verbs.addAll(verbLists?.verbLists['b1']?.verbs ?? []);
+    }
+    if (b2Checked) {
+      verbs.verbs.addAll(verbLists?.verbLists['b2']?.verbs ?? []);
+    }
+    if (c1Checked) {
+      verbs.verbs.addAll(verbLists?.verbLists['c1']?.verbs ?? []);
+    }
+    if (c2Checked) {
+      verbs.verbs.addAll(verbLists?.verbLists['c2']?.verbs ?? []);
+    }
+
+    await prefs.setStringList('selectedVerbs', verbs.toJson());
   }
 
   @override
