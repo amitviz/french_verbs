@@ -198,32 +198,58 @@ class Dictionary {
   }
 
   Map<String, dynamic> getQuestion() {
-    final verb = getRandomVerb();
-    final conjugated = conjugateVerb(verb.verb, true);
-
     final rand = Random();
-    // Select a random mood
-    List<MOOD> moods = conjugated!.keys.toList();
-    MOOD mood = moods[rand.nextInt(moods.length)];
+    const int maxAttempts = 20;
 
-    // Select a random tense
-    List<TENSE> tenses = conjugated[mood]!.keys.toList();
-    TENSE tense = tenses[rand.nextInt(tenses.length)];
+    for (int attempt = 0; attempt < maxAttempts; attempt++) {
+      final verb = getRandomVerb();
+      final conjugated = conjugateVerb(verb.verb, true);
 
-    // Select a random form
-    List<FORM> forms = conjugated[mood]![tense]!.keys.toList();
-    FORM form = forms[rand.nextInt(forms.length)];
+      // Select a random mood
+      final availableMoods = conjugated!.keys.toList();
+      final acceptableMoods =
+          selectedMoodsTenses?.keys.toList() ?? availableMoods;
+      final acceptableSetMoods = acceptableMoods.toSet();
+      final commonMoods = availableMoods
+          .where((m) => acceptableSetMoods.contains(m))
+          .toList();
 
-    // Get the conjugated variants
-    Map<String, dynamic> question = {
-      "verb": verb,
-      "mood": mood,
-      "tense": tense,
-      "form": form,
-      "conjugation": conjugated[mood]![tense]![form],
-    };
+      if (commonMoods.isEmpty) {
+        continue; // No acceptable moods for this verb, try again
+      }
 
-    return question;
+      MOOD mood = commonMoods[rand.nextInt(commonMoods.length)];
+
+      // Select a random tense
+      final availableTenses = conjugated[mood]!.keys.toList();
+      final acceptableTenses = selectedMoodsTenses?[mood] ?? availableTenses;
+      final acceptableSetTenses = acceptableTenses.toSet();
+      final commonTenses = availableTenses
+          .where((t) => acceptableSetTenses.contains(t))
+          .toList();
+
+      if (commonTenses.isEmpty) {
+        continue; // No acceptable tenses for this mood, try again
+      }
+
+      TENSE tense = commonTenses[rand.nextInt(commonTenses.length)];
+
+      // Select a random form
+      List<FORM> forms = conjugated[mood]![tense]!.keys.toList();
+      FORM form = forms[rand.nextInt(forms.length)];
+
+      // Get the conjugated variants
+      Map<String, dynamic> question = {
+        "verb": verb,
+        "mood": mood,
+        "tense": tense,
+        "form": form,
+        "conjugation": conjugated[mood]![tense]![form],
+      };
+
+      return question;
+    }
+    throw Exception("Unable to generate question with current preferences.");
   }
 
   void refreshPreferences() async {
