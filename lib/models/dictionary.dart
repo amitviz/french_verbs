@@ -12,7 +12,7 @@ class Dictionary {
   late Map<String, Verb> verbs;
   late Map<String, Conjugation> conjugations;
   late List<String>? selectedVerbs;
-  late List<String>? selectedMoodsTenses;
+  late Map<MOOD, List<TENSE>>? selectedMoodsTenses;
 
   Map<String, Verb> _parseVerbs(dynamic decoded) {
     if (decoded is Map<String, dynamic>) {
@@ -229,7 +229,22 @@ class Dictionary {
   void refreshPreferences() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     selectedVerbs = prefs.getStringList('selectedVerbs');
-    selectedMoodsTenses = prefs.getStringList('selectedMoodsTenses');
+    List<String>? prefMoodsTenses = prefs.getStringList('moodsTenses');
+
+    if (prefMoodsTenses != null && prefMoodsTenses.isNotEmpty) {
+      selectedMoodsTenses = {};
+      for (String moodTense in prefMoodsTenses) {
+        final parts = moodTense.split('_');
+        if (parts.length == 2) {
+          final mood = MOOD.values.firstWhere((m) => m.value == parts[0]);
+          final tense = TENSE.values.firstWhere((t) => t.value == parts[1]);
+          selectedMoodsTenses![mood] = selectedMoodsTenses![mood] ?? [];
+          selectedMoodsTenses![mood]!.add(tense);
+        }
+      }
+    } else {
+      selectedMoodsTenses = null;
+    }
   }
 
   // private constructor

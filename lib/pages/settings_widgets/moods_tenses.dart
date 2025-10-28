@@ -46,7 +46,10 @@ class _MoodsTensesState extends State<MoodsTenses> {
             onChanged: (bool? value) {
               setState(() {
                 if (value == true) {
-                  moodsTenses.add("${m.value}_${t.value}");
+                  final key = "${m.value}_${t.value}";
+                  if (!moodsTenses.contains(key)) {
+                    moodsTenses.add(key);
+                  }
                 } else {
                   moodsTenses.remove("${m.value}_${t.value}");
                 }
