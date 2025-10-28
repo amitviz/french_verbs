@@ -9,11 +9,6 @@ class MoodWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FilledButton.tonalIcon(
-      onPressed: () {},
-      icon: const Icon(Icons.record_voice_over),
-      label: Text(mood),
-      iconAlignment: IconAlignment.start,
-    );
+    return Chip(label: Text(mood), avatar: const Icon(Icons.record_voice_over));
   }
 }
