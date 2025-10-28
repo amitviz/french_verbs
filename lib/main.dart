@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Conjugaison Française',
+      title: 'Le Petit Conjugueur',
       navigatorObservers: [routeObserver],
       home: VerbApp(),
       routes: {
