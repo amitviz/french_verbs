@@ -181,16 +181,6 @@ enum MOOD {
     french: "indicatif",
     tenses: [TENSE.present, TENSE.imperfect, TENSE.future, TENSE.pastSimple],
   ),
-  conditional(
-    value: 'conditional',
-    french: "conditionnel",
-    tenses: [TENSE.present],
-  ),
-  subjunctive(
-    value: 'subjunctive',
-    french: "subjonctif",
-    tenses: [TENSE.present, TENSE.imperfect],
-  ),
   imperative(
     value: 'imperative',
     french: "impératif",
@@ -200,6 +190,16 @@ enum MOOD {
     value: 'participle',
     french: "participe",
     tenses: [TENSE.participlePresent, TENSE.participlePast],
+  ),
+  conditional(
+    value: 'conditional',
+    french: "conditionnel",
+    tenses: [TENSE.present],
+  ),
+  subjunctive(
+    value: 'subjunctive',
+    french: "subjonctif",
+    tenses: [TENSE.present, TENSE.imperfect],
   );
 
   const MOOD({required this.value, required this.french, required this.tenses});

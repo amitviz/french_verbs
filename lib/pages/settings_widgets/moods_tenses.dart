@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import "package:flutter/material.dart";
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:french_verbs/models/enums.dart';
@@ -12,7 +10,7 @@ class MoodsTenses extends StatefulWidget {
 }
 
 class _MoodsTensesState extends State<MoodsTenses> {
-  Map<String, bool> moodsTenses = {};
+  List<String> moodsTenses = [];
 
   @override
   void initState() {
@@ -23,25 +21,16 @@ class _MoodsTensesState extends State<MoodsTenses> {
 
   Future<void> loadSharedPrefs() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? moodsTensesJson = prefs.getString('moodsTenses');
-
-    if (moodsTensesJson == null || moodsTensesJson.isEmpty) {
-      return; // No saved prefs — keep defaults.
-    }
 
     setState(() {
-      final Map<String, dynamic> decoded =
-          json.decode(moodsTensesJson) as Map<String, dynamic>;
-      moodsTenses = decoded.map((k, v) => MapEntry(k, v as bool));
+      moodsTenses = prefs.getStringList('moodsTenses') ?? [];
     });
   }
 
   Future<void> setSharedPrefs() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    final String moodsTensesJson = jsonEncode(moodsTenses);
-
-    await prefs.setString('moodsTenses', moodsTensesJson);
+    await prefs.setStringList('moodsTenses', moodsTenses);
   }
 
   @override
@@ -53,10 +42,14 @@ class _MoodsTensesState extends State<MoodsTenses> {
         children.add(
           CheckboxListTile(
             title: Text("${m.french} ${t.french}"),
-            value: moodsTenses["${m.value}_${t.value}"] ?? false,
+            value: moodsTenses.contains("${m.value}_${t.value}") ? true : false,
             onChanged: (bool? value) {
               setState(() {
-                moodsTenses["${m.value}_${t.value}"] = value!;
+                if (value == true) {
+                  moodsTenses.add("${m.value}_${t.value}");
+                } else {
+                  moodsTenses.remove("${m.value}_${t.value}");
+                }
               });
               setSharedPrefs();
             },
