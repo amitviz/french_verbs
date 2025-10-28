@@ -9,6 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_test:
@@ -21,3 +22,4 @@ flutter:
   assets:
     - assets/dictionaries/verbs.json
     - assets/dictionaries/conjugations.json
+    - assets/verb_lists/verb_lists.json

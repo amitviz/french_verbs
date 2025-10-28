@@ -1,6 +1,7 @@
 import "dart:convert";
 import "dart:math";
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:shared_preferences/shared_preferences.dart';
 import "verb.dart";
 import "conjugation.dart";
 import "enums.dart";
@@ -10,6 +11,7 @@ class Dictionary {
   final String conjugationsFile = "assets/dictionaries/conjugations.json";
   late Map<String, Verb> verbs;
   late Map<String, Conjugation> conjugations;
+  late List<String>? selectedVerbs;
 
   Map<String, Verb> _parseVerbs(dynamic decoded) {
     if (decoded is Map<String, dynamic>) {
@@ -185,8 +187,13 @@ class Dictionary {
 
   Verb getRandomVerb() {
     final rand = Random();
-    final index = rand.nextInt(verbs.length);
-    return verbs.values.elementAt(index);
+    if (selectedVerbs == null || selectedVerbs!.isEmpty) {
+      final index = rand.nextInt(verbs.length);
+      return verbs.values.elementAt(index);
+    } else {
+      final index = rand.nextInt(selectedVerbs!.length);
+      return verbs[selectedVerbs![index]]!;
+    }
   }
 
   Map<String, dynamic> getQuestion() {
@@ -218,6 +225,11 @@ class Dictionary {
     return question;
   }
 
+  void refreshSelectedVerbs() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    selectedVerbs = prefs.getStringList('selectedVerbs');
+  }
+
   // private constructor
   Dictionary._();
 
@@ -233,6 +245,9 @@ class Dictionary {
     );
     final conjugationsJson = jsonDecode(conjugationsJsonString);
     dict.conjugations = dict._parseConjugations(conjugationsJson);
+
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    dict.selectedVerbs = prefs.getStringList('selectedVerbs');
 
     return dict;
   }

@@ -7,6 +7,7 @@ import "package:french_verbs/pages/verb_widgets/person.dart";
 import "package:french_verbs/pages/verb_widgets/input.dart";
 import "package:french_verbs/pages/verb_widgets/input_button.dart";
 import "package:french_verbs/models/dictionary.dart";
+import "package:french_verbs/main.dart"; // for routeObserver
 
 class VerbAppWidget extends StatefulWidget {
   const VerbAppWidget({super.key});
@@ -15,7 +16,7 @@ class VerbAppWidget extends StatefulWidget {
   State<VerbAppWidget> createState() => _VerbAppWidgetState();
 }
 
-class _VerbAppWidgetState extends State<VerbAppWidget> {
+class _VerbAppWidgetState extends State<VerbAppWidget> with RouteAware {
   // App has two modes:
   //   - question mode: shows the user a verb to conjugate
   //   - answer mode: shows the correct conjugation for the verb
@@ -43,6 +44,11 @@ class _VerbAppWidgetState extends State<VerbAppWidget> {
   // final dictionary = await Dictionary.load();
   Dictionary? dictionary;
   bool _dictionaryLoaded = false;
+
+  void _onReappear() {
+    // When the widget reappears (e.g. after navigating back to it)
+    dictionary!.refreshSelectedVerbs();
+  }
 
   void _handleDefinitionToggle() {
     setState(() {
@@ -123,10 +129,27 @@ class _VerbAppWidgetState extends State<VerbAppWidget> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route is PageRoute) {
+      routeObserver.subscribe(this, route);
+    }
+  }
+
+  @override
   void dispose() {
+    routeObserver.unsubscribe(this);
     _inputController.dispose();
     _inputFocusNode.dispose();
     super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    // Called when another route above this one has been popped
+    super.didPopNext();
+    _onReappear();
   }
 
   @override
