@@ -38,7 +38,7 @@ class VerbApp extends StatelessWidget {
           ],
         ),
       ),
-      body: VerbAppWidget(),
+      body: SingleChildScrollView(child: VerbAppWidget()),
     );
   }
 }
