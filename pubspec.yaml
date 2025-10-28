@@ -22,3 +22,4 @@ flutter:
   assets:
     - assets/dictionaries/verbs.json
     - assets/dictionaries/conjugations.json
+    - assets/verb_lists/verb_lists.json
