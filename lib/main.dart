@@ -3,6 +3,8 @@ import 'package:french_verbs/pages/dictionary_app.dart';
 import 'package:french_verbs/pages/settings_app.dart';
 import 'package:french_verbs/pages/verb_app.dart';
 
+final RouteObserver<ModalRoute<void>> routeObserver =
+    RouteObserver<ModalRoute<void>>();
 void main() {
   runApp(const MyApp());
 }
@@ -15,6 +17,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Conjugaison Française',
+      navigatorObservers: [routeObserver],
       home: VerbApp(),
       routes: {
         '/verbes': (context) => const VerbApp(),

@@ -225,6 +225,11 @@ class Dictionary {
     return question;
   }
 
+  void refreshSelectedVerbs() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    selectedVerbs = prefs.getStringList('selectedVerbs');
+  }
+
   // private constructor
   Dictionary._();
 
