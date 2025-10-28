@@ -12,6 +12,7 @@ class Dictionary {
   late Map<String, Verb> verbs;
   late Map<String, Conjugation> conjugations;
   late List<String>? selectedVerbs;
+  late List<String>? selectedMoodsTenses;
 
   Map<String, Verb> _parseVerbs(dynamic decoded) {
     if (decoded is Map<String, dynamic>) {
@@ -225,9 +226,10 @@ class Dictionary {
     return question;
   }
 
-  void refreshSelectedVerbs() async {
+  void refreshPreferences() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     selectedVerbs = prefs.getStringList('selectedVerbs');
+    selectedMoodsTenses = prefs.getStringList('selectedMoodsTenses');
   }
 
   // private constructor

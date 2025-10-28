@@ -47,7 +47,7 @@ class _VerbAppWidgetState extends State<VerbAppWidget> with RouteAware {
 
   void _onReappear() {
     // When the widget reappears (e.g. after navigating back to it)
-    dictionary!.refreshSelectedVerbs();
+    dictionary!.refreshPreferences();
   }
 
   void _handleDefinitionToggle() {
