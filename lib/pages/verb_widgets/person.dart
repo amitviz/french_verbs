@@ -8,11 +8,6 @@ class PersonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FilledButton.tonalIcon(
-      onPressed: () {},
-      icon: const Icon(Icons.people),
-      label: Text(person),
-      iconAlignment: IconAlignment.start,
-    );
+    return Chip(label: Text(person), avatar: const Icon(Icons.people));
   }
 }

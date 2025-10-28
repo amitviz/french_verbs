@@ -9,11 +9,9 @@ class TenseWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FilledButton.tonalIcon(
-      onPressed: () {},
-      icon: const Icon(Icons.access_time_filled),
+    return Chip(
       label: Text(tense),
-      iconAlignment: IconAlignment.start,
+      avatar: const Icon(Icons.access_time_filled),
     );
   }
 }
