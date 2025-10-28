@@ -1,7 +1,6 @@
 import "package:flutter/material.dart";
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:french_verbs/models/verb_list.dart';
 import 'package:french_verbs/models/verb_lists.dart' as model_verb_lists;
 
 class VerbLists extends StatefulWidget {
@@ -84,29 +83,29 @@ class _VerbListsState extends State<VerbLists> {
     await prefs.setStringList('verbLists', list);
 
     // The actual list of verbs selected
-    // List<String> verbs = [];
-    VerbList verbs = VerbList.fromJson("[]");
+    List<String> verbs = [];
+    // VerbList verbs = VerbList.fromJson("[]");
 
     if (a1Checked) {
-      verbs.verbs.addAll(verbLists?.verbLists['a1']?.verbs ?? []);
+      verbs.addAll(verbLists?.verbLists['a1']?.verbs ?? []);
     }
     if (a2Checked) {
-      verbs.verbs.addAll(verbLists?.verbLists['a2']?.verbs ?? []);
+      verbs.addAll(verbLists?.verbLists['a2']?.verbs ?? []);
     }
     if (b1Checked) {
-      verbs.verbs.addAll(verbLists?.verbLists['b1']?.verbs ?? []);
+      verbs.addAll(verbLists?.verbLists['b1']?.verbs ?? []);
     }
     if (b2Checked) {
-      verbs.verbs.addAll(verbLists?.verbLists['b2']?.verbs ?? []);
+      verbs.addAll(verbLists?.verbLists['b2']?.verbs ?? []);
     }
     if (c1Checked) {
-      verbs.verbs.addAll(verbLists?.verbLists['c1']?.verbs ?? []);
+      verbs.addAll(verbLists?.verbLists['c1']?.verbs ?? []);
     }
     if (c2Checked) {
-      verbs.verbs.addAll(verbLists?.verbLists['c2']?.verbs ?? []);
+      verbs.addAll(verbLists?.verbLists['c2']?.verbs ?? []);
     }
 
-    await prefs.setStringList('selectedVerbs', verbs.toJson());
+    await prefs.setStringList('selectedVerbs', verbs);
   }
 
   @override
