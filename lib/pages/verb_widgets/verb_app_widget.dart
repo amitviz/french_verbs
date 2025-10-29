@@ -82,8 +82,14 @@ class _VerbAppWidgetState extends State<VerbAppWidget> with RouteAware {
           q['tense'],
         );
         _verb = q['verb'].verb;
-        _definition =
-            q['verb'].definitions.join(" • ") ?? 'No definition available';
+        if (q['verb'].definitions.length > 3) {
+          _definition =
+              q['verb'].definitions.sublist(0, 3).join(" • ") ??
+              'No definition available';
+        } else {
+          _definition =
+              q['verb'].definitions.join(" • ") ?? 'No definition available';
+        }
         _definitionIsRevealed = false;
         _mood = q['mood'].french;
         _tense = q['tense'].french;
