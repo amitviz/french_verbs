@@ -9,7 +9,8 @@ import "package:french_verbs/pages/verb_widgets/input_button.dart";
 import "package:french_verbs/pages/common_widgets/conjugation_display.dart";
 import "package:french_verbs/models/dictionary.dart";
 import "package:french_verbs/models/enums.dart";
-import "package:french_verbs/main.dart"; // for routeObserver
+import "package:french_verbs/main.dart";
+import "package:french_verbs/utilities/utilities.dart"; // for routeObserver
 
 class VerbAppWidget extends StatefulWidget {
   const VerbAppWidget({super.key});
@@ -193,7 +194,7 @@ class _VerbAppWidgetState extends State<VerbAppWidget> with RouteAware {
                   controller: _inputController,
                   focusNode: _inputFocusNode,
                   onSubmit: _handleSubmit,
-                  pronoun: _pronoun,
+                  pronoun: _quePrefix(_pronoun),
                   correct: _correct,
                   errorText: _errorText,
                 ),
@@ -204,10 +205,24 @@ class _VerbAppWidgetState extends State<VerbAppWidget> with RouteAware {
         ),
         ConjugationDisplay(
           conjugatedTense: conjugatedTense,
+          mood: _mood,
+          tense: _tense,
           isRevealed: _definitionIsRevealed,
         ),
       ],
     );
     return w;
+  }
+
+  String _quePrefix(String pronoun) {
+    if (_mood == MOOD.subjunctive.french) {
+      if (startsWithVowel(pronoun)) {
+        return "qu'$pronoun";
+      } else {
+        return "que $pronoun";
+      }
+    } else {
+      return pronoun;
+    }
   }
 }

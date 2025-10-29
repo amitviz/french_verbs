@@ -4,7 +4,8 @@ import 'package:french_verbs/utilities/utilities.dart';
 
 class ConjugationDisplay extends StatelessWidget {
   final Map<FORM, List<String>?>? conjugatedTense;
-
+  final String mood;
+  final String tense;
   final String title;
   final bool isRevealed;
   final bool isExpanded;
@@ -12,6 +13,8 @@ class ConjugationDisplay extends StatelessWidget {
   const ConjugationDisplay({
     super.key,
     required this.conjugatedTense,
+    this.mood = "indicatif",
+    this.tense = "présent",
     this.title = "Conjugation",
     this.isRevealed = false,
     this.isExpanded = false,
@@ -28,6 +31,13 @@ class ConjugationDisplay extends StatelessWidget {
 
         if (form == FORM.je && startsWithVowel(list?.first ?? '')) {
           label = "j'";
+        }
+        if (mood == MOOD.subjunctive.french) {
+          if (startsWithVowel(label)) {
+            label = "qu'$label";
+          } else {
+            label = "que $label";
+          }
         }
 
         if (list == null || list.isEmpty) {
@@ -78,7 +88,7 @@ class ConjugationDisplay extends StatelessWidget {
       child: ExpansionTile(
         initiallyExpanded: isExpanded,
         title: Text(title),
-        subtitle: Text(''),
+        // subtitle: Text(''),
         children: <Widget>[conjugationTable],
       ),
     );

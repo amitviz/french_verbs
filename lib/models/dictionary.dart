@@ -1,6 +1,7 @@
 import "dart:convert";
 import "dart:math";
 import 'package:flutter/services.dart' show rootBundle;
+import "package:french_verbs/utilities/utilities.dart";
 import 'package:shared_preferences/shared_preferences.dart';
 import "verb.dart";
 import "conjugation.dart";
@@ -81,18 +82,96 @@ class Dictionary {
   ) {
     String verbEnding = verbs[verb]?.type.split(":").last ?? "";
     String verbRoot = verb.substring(0, verb.length - verbEnding.length);
-    List<String>? variants = conjugations[verbs[verb]?.type]
-        ?.moods[mood.value]
-        ?.tenses[tense.value]
-        ?.forms[form.value]
-        .variants;
 
-    // Return null when there are no variants (null or empty list)
-    if (variants == null || variants.isEmpty) return null;
+    List<String> conjugatedVariants = [];
+    if ([
+      TENSE.passecompose,
+      TENSE.plusqueparfait,
+      TENSE.passe,
+      TENSE.imperativepasse,
+    ].contains(tense)) {
+      // avoir and etre verbs, with agreement where necessary
+      String auxiliaryVerb = verbs[verb]?.auxiliary ?? "avoir";
 
-    List<String> conjugatedVariants = List.from(
-      variants,
-    ).map((v) => "${verbRoot}${v}").toList();
+      TENSE auxiliaryTense;
+      if ([TENSE.imperativepasse].contains(tense)) {
+        auxiliaryTense = TENSE.imperative;
+      } else if ([TENSE.plusqueparfait].contains(tense)) {
+        auxiliaryTense = TENSE.imperfect;
+      } else {
+        // case for passe compose, conditional passe, subjunctive passe
+        auxiliaryTense = TENSE.present;
+      }
+
+      List<String>? conjugatedAuxiliary = _getConjugation(
+        auxiliaryVerb,
+        mood,
+        auxiliaryTense,
+        form,
+      );
+
+      FORM participleForm;
+      if (auxiliaryVerb == "avoir") {
+        participleForm = FORM.participle;
+      } else {
+        // need to find the right form for agreement
+        participleForm =
+            form.participleForm ??
+            FORM.participle; // default to masculine singular
+      }
+
+      List<String>? pastParticiple = _getConjugation(
+        verb,
+        MOOD.participle,
+        TENSE.participlePast,
+        participleForm,
+      );
+
+      conjugatedVariants = [
+        '${conjugatedAuxiliary?.first} ${pastParticiple?.first}',
+      ];
+    } else if (tense == TENSE.futurproche || tense == TENSE.passerecent) {
+      // simple compound forms
+      String auxiliaryVerb = tense == TENSE.futurproche ? "aller" : "venir";
+
+      List<String>? conjugatedAuxiliary = _getConjugation(
+        auxiliaryVerb,
+        MOOD.indicative,
+        TENSE.present,
+        form,
+      );
+
+      List<String>? infinitive = _getConjugation(
+        verb,
+        MOOD.infinitive,
+        TENSE.infinitive,
+        FORM.infinitive,
+      );
+
+      String connector = tense == TENSE.futurproche
+          ? ""
+          : startsWithVowel(infinitive?.first ?? "")
+          ? "d'"
+          : "de ";
+
+      conjugatedVariants = [
+        '${conjugatedAuxiliary?.first} $connector${infinitive?.first}',
+      ];
+    } else {
+      // Default conjugation
+      List<String>? variants = conjugations[verbs[verb]?.type]
+          ?.moods[mood.value]
+          ?.tenses[tense.value]
+          ?.forms[form.value]
+          .variants;
+
+      // Return null when there are no variants (null or empty list)
+      if (variants == null || variants.isEmpty) return null;
+
+      conjugatedVariants = List.from(
+        variants,
+      ).map((v) => "${verbRoot}${v}").toList();
+    }
 
     // print("${verb}: ${verbs[verb]}");
     // print("verbtype: ${verbs[verb]?.type}");
