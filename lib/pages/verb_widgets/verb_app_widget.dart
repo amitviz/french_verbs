@@ -205,6 +205,8 @@ class _VerbAppWidgetState extends State<VerbAppWidget> with RouteAware {
         ),
         ConjugationDisplay(
           conjugatedTense: conjugatedTense,
+          mood: _mood,
+          tense: _tense,
           isRevealed: _definitionIsRevealed,
         ),
       ],
