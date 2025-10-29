@@ -6,7 +6,9 @@ import "package:french_verbs/pages/verb_widgets/tense.dart";
 import "package:french_verbs/pages/verb_widgets/person.dart";
 import "package:french_verbs/pages/verb_widgets/input.dart";
 import "package:french_verbs/pages/verb_widgets/input_button.dart";
+import "package:french_verbs/pages/common_widgets/conjugation_display.dart";
 import "package:french_verbs/models/dictionary.dart";
+import "package:french_verbs/models/enums.dart";
 import "package:french_verbs/main.dart"; // for routeObserver
 
 class VerbAppWidget extends StatefulWidget {
@@ -44,6 +46,7 @@ class _VerbAppWidgetState extends State<VerbAppWidget> with RouteAware {
   // final dictionary = await Dictionary.load();
   Dictionary? dictionary;
   bool _dictionaryLoaded = false;
+  Map<FORM, List<String>?>? conjugatedTense;
 
   void _onReappear() {
     // When the widget reappears (e.g. after navigating back to it)
@@ -71,9 +74,13 @@ class _VerbAppWidgetState extends State<VerbAppWidget> with RouteAware {
       }
 
       final q = dictionary!.getQuestion();
-      // debugPrint('Expected answer(s): ${q['conjugation']}');
 
       setState(() {
+        conjugatedTense = dictionary!.conjugateTense(
+          q['verb'].verb,
+          q['mood'],
+          q['tense'],
+        );
         _verb = q['verb'].verb;
         _definition =
             q['verb'].definitions.join(" • ") ?? 'No definition available';
@@ -188,6 +195,10 @@ class _VerbAppWidgetState extends State<VerbAppWidget> with RouteAware {
             ),
             InputButtonWidget(onSubmit: _handleSubmit),
           ],
+        ),
+        ConjugationDisplay(
+          conjugatedTense: conjugatedTense,
+          isRevealed: _definitionIsRevealed,
         ),
       ],
     );
