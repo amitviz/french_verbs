@@ -78,7 +78,7 @@ class ConjugationDisplay extends StatelessWidget {
       child: ExpansionTile(
         initiallyExpanded: isExpanded,
         title: Text(title),
-        subtitle: Text(''),
+        // subtitle: Text(''),
         children: <Widget>[conjugationTable],
       ),
     );

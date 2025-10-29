@@ -1,16 +1,56 @@
 enum FORM {
   infinitive(value: 0, french: "", prefix: ""),
-  je(value: 0, french: "je", prefix: "je "),
-  tu(value: 1, french: "tu", prefix: "tu "),
-  il(value: 2, french: "il", prefix: "il "),
-  elle(value: 2, french: "elle", prefix: "elle "),
-  on(value: 2, french: "on", prefix: "on "),
-  ilElleOn(value: 2, french: "il/elle/on", prefix: ""),
-  nous(value: 3, french: "nous", prefix: "nous "),
-  vous(value: 4, french: "vous", prefix: "vous "),
-  ils(value: 5, french: "ils", prefix: "ils "),
-  elles(value: 5, french: "elles", prefix: "elles "),
-  ilsElles(value: 5, french: "ils/elles", prefix: ""),
+  je(value: 0, french: "je", prefix: "je ", participleForm: FORM.participle),
+  tu(value: 1, french: "tu", prefix: "tu ", participleForm: FORM.participle),
+  il(
+    value: 2,
+    french: "il",
+    prefix: "il ",
+    participleForm: FORM.participleMasculineSingular,
+  ),
+  elle(
+    value: 2,
+    french: "elle",
+    prefix: "elle ",
+    participleForm: FORM.participleFeminineSingular,
+  ),
+  on(value: 2, french: "on", prefix: "on ", participleForm: FORM.participle),
+  ilElleOn(
+    value: 2,
+    french: "il/elle/on",
+    prefix: "",
+    participleForm: FORM.participle,
+  ),
+  nous(
+    value: 3,
+    french: "nous",
+    prefix: "nous ",
+    participleForm: FORM.participleMasculinePlural,
+  ),
+  vous(
+    value: 4,
+    french: "vous",
+    prefix: "vous ",
+    participleForm: FORM.participleMasculinePlural,
+  ),
+  ils(
+    value: 5,
+    french: "ils",
+    prefix: "ils ",
+    participleForm: FORM.participleMasculinePlural,
+  ),
+  elles(
+    value: 5,
+    french: "elles",
+    prefix: "elles ",
+    participleForm: FORM.participleFemininePlural,
+  ),
+  ilsElles(
+    value: 5,
+    french: "ils/elles",
+    prefix: "",
+    participleForm: FORM.participleMasculinePlural,
+  ),
   imperativeTu(value: 0, french: "(tu)", prefix: ""),
   imperativeNous(value: 1, french: "(nous)", prefix: ""),
   imperativeVous(value: 2, french: "(vous)", prefix: ""),
@@ -21,11 +61,17 @@ enum FORM {
   participleMasculinePlural(value: 1, french: "(m.pl.)", prefix: ""),
   participleFemininePlural(value: 3, french: "(f.pl.)", prefix: "");
 
-  const FORM({required this.value, required this.french, required this.prefix});
+  const FORM({
+    required this.value,
+    required this.french,
+    required this.prefix,
+    this.participleForm,
+  });
 
   final int value;
   final String french;
   final String prefix;
+  final FORM? participleForm;
 }
 
 enum TENSE {
@@ -38,6 +84,75 @@ enum TENSE {
   present(
     value: 'present',
     french: "présent",
+    forms: [
+      FORM.je,
+      FORM.tu,
+      FORM.il,
+      FORM.elle,
+      FORM.on,
+      FORM.nous,
+      FORM.vous,
+      FORM.ils,
+      FORM.elles,
+    ],
+    conjugationForms: [
+      FORM.je,
+      FORM.tu,
+      FORM.ilElleOn,
+      FORM.nous,
+      FORM.vous,
+      FORM.ilsElles,
+    ],
+  ),
+  passecompose(
+    value: 'passecompose',
+    french: "passé composé",
+    forms: [
+      FORM.je,
+      FORM.tu,
+      FORM.il,
+      FORM.elle,
+      FORM.on,
+      FORM.nous,
+      FORM.vous,
+      FORM.ils,
+      FORM.elles,
+    ],
+    conjugationForms: [
+      FORM.je,
+      FORM.tu,
+      FORM.ilElleOn,
+      FORM.nous,
+      FORM.vous,
+      FORM.ilsElles,
+    ],
+  ),
+  futurproche(
+    value: 'futurproche',
+    french: "futur proche",
+    forms: [
+      FORM.je,
+      FORM.tu,
+      FORM.il,
+      FORM.elle,
+      FORM.on,
+      FORM.nous,
+      FORM.vous,
+      FORM.ils,
+      FORM.elles,
+    ],
+    conjugationForms: [
+      FORM.je,
+      FORM.tu,
+      FORM.ilElleOn,
+      FORM.nous,
+      FORM.vous,
+      FORM.ilsElles,
+    ],
+  ),
+  passerecent(
+    value: 'passerecent',
+    french: "passé récent",
     forms: [
       FORM.je,
       FORM.tu,
@@ -127,6 +242,29 @@ enum TENSE {
       FORM.ilsElles,
     ],
   ),
+  plusqueparfait(
+    value: 'plusqueparfait',
+    french: "plus-que-parfait",
+    forms: [
+      FORM.je,
+      FORM.tu,
+      FORM.il,
+      FORM.elle,
+      FORM.on,
+      FORM.nous,
+      FORM.vous,
+      FORM.ils,
+      FORM.elles,
+    ],
+    conjugationForms: [
+      FORM.je,
+      FORM.tu,
+      FORM.ilElleOn,
+      FORM.nous,
+      FORM.vous,
+      FORM.ilsElles,
+    ],
+  ),
   imperative(
     value: 'imperative-present',
     french: "présent",
@@ -179,7 +317,16 @@ enum MOOD {
   indicative(
     value: 'indicative',
     french: "indicatif",
-    tenses: [TENSE.present, TENSE.imperfect, TENSE.future, TENSE.pastSimple],
+    tenses: [
+      TENSE.present,
+      TENSE.passecompose,
+      TENSE.futurproche,
+      TENSE.passerecent,
+      TENSE.imperfect,
+      TENSE.future,
+      TENSE.pastSimple,
+      TENSE.plusqueparfait,
+    ],
   ),
   imperative(
     value: 'imperative',
