@@ -74,6 +74,8 @@ class _InputWidgetState extends State<InputWidget> {
   String _prefixText() {
     if (widget.pronoun == "je " && startsWithVowel(userInput)) {
       return "j'";
+    } else if (widget.pronoun == "que je " && startsWithVowel(userInput)) {
+      return "que j'";
     } else {
       return widget.pronoun;
     }
