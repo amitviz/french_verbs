@@ -51,9 +51,24 @@ enum FORM {
     prefix: "",
     participleForm: FORM.participleMasculinePlural,
   ),
-  imperativeTu(value: 0, french: "(tu)", prefix: ""),
-  imperativeNous(value: 1, french: "(nous)", prefix: ""),
-  imperativeVous(value: 2, french: "(vous)", prefix: ""),
+  imperativeTu(
+    value: 0,
+    french: "(tu)",
+    prefix: "",
+    participleForm: FORM.participle,
+  ),
+  imperativeNous(
+    value: 1,
+    french: "(nous)",
+    prefix: "",
+    participleForm: FORM.participleMasculinePlural,
+  ),
+  imperativeVous(
+    value: 2,
+    french: "(vous)",
+    prefix: "",
+    participleForm: FORM.participleMasculinePlural,
+  ),
   gerund(value: 0, french: "", prefix: ""),
   participle(value: 0, french: "", prefix: ""),
   participleMasculineSingular(value: 0, french: "(m.)", prefix: ""),
@@ -107,6 +122,29 @@ enum TENSE {
   passecompose(
     value: 'passecompose',
     french: "passé composé",
+    forms: [
+      FORM.je,
+      FORM.tu,
+      FORM.il,
+      FORM.elle,
+      FORM.on,
+      FORM.nous,
+      FORM.vous,
+      FORM.ils,
+      FORM.elles,
+    ],
+    conjugationForms: [
+      FORM.je,
+      FORM.tu,
+      FORM.ilElleOn,
+      FORM.nous,
+      FORM.vous,
+      FORM.ilsElles,
+    ],
+  ),
+  passe(
+    value: 'passe',
+    french: "passé",
     forms: [
       FORM.je,
       FORM.tu,
@@ -275,6 +313,16 @@ enum TENSE {
       FORM.imperativeVous,
     ],
   ),
+  imperativepasse(
+    value: 'imperative-passe',
+    french: "passé",
+    forms: [FORM.imperativeTu, FORM.imperativeNous, FORM.imperativeVous],
+    conjugationForms: [
+      FORM.imperativeTu,
+      FORM.imperativeNous,
+      FORM.imperativeVous,
+    ],
+  ),
   participlePresent(
     value: 'present-participle',
     french: "gérondif",
@@ -331,7 +379,7 @@ enum MOOD {
   imperative(
     value: 'imperative',
     french: "impératif",
-    tenses: [TENSE.imperative],
+    tenses: [TENSE.imperative, TENSE.imperativepasse],
   ),
   participle(
     value: 'participle',
@@ -341,12 +389,12 @@ enum MOOD {
   conditional(
     value: 'conditional',
     french: "conditionnel",
-    tenses: [TENSE.present],
+    tenses: [TENSE.present, TENSE.passe],
   ),
   subjunctive(
     value: 'subjunctive',
     french: "subjonctif",
-    tenses: [TENSE.present, TENSE.imperfect],
+    tenses: [TENSE.present, TENSE.imperfect, TENSE.passe],
   );
 
   const MOOD({required this.value, required this.french, required this.tenses});

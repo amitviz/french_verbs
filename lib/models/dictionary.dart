@@ -84,14 +84,29 @@ class Dictionary {
     String verbRoot = verb.substring(0, verb.length - verbEnding.length);
 
     List<String> conjugatedVariants = [];
-    if (tense == TENSE.passecompose || tense == TENSE.plusqueparfait) {
+    if ([
+      TENSE.passecompose,
+      TENSE.plusqueparfait,
+      TENSE.passe,
+      TENSE.imperativepasse,
+    ].contains(tense)) {
       // avoir and etre verbs, with agreement where necessary
       String auxiliaryVerb = verbs[verb]?.auxiliary ?? "avoir";
 
+      TENSE auxiliaryTense;
+      if ([TENSE.imperativepasse].contains(tense)) {
+        auxiliaryTense = TENSE.imperative;
+      } else if ([TENSE.plusqueparfait].contains(tense)) {
+        auxiliaryTense = TENSE.imperfect;
+      } else {
+        // case for passe compose, conditional passe, subjunctive passe
+        auxiliaryTense = TENSE.present;
+      }
+
       List<String>? conjugatedAuxiliary = _getConjugation(
         auxiliaryVerb,
-        MOOD.indicative,
-        tense == TENSE.plusqueparfait ? TENSE.imperfect : TENSE.present,
+        mood,
+        auxiliaryTense,
         form,
       );
 
