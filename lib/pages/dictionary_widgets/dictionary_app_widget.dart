@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 import "package:french_verbs/models/dictionary.dart";
 import "package:french_verbs/models/reverse_dictionary.dart";
-import "package:french_verbs/pages/common_widgets/conjugation_display.dart";
+import "package:french_verbs/pages/common_widgets/conjugation_table.dart";
 import "package:french_verbs/pages/dictionary_widgets/input.dart";
 import "package:french_verbs/pages/dictionary_widgets/input_button.dart";
 import "package:french_verbs/pages/verb_widgets/verb_display.dart";
@@ -120,13 +120,17 @@ class _DictionaryAppWidgetState extends State<DictionaryAppWidget> {
         // debugPrint('Mood: $mood, Tense: $tense');
         String title = '${mood.french} - ${tense.french}';
         conjugationChildren.add(
-          ConjugationDisplay(
-            conjugatedTense: tenseMap,
-            mood: mood,
-            title: title,
-            isRevealed: true,
-            isExpanded: true,
+          Padding(
+            padding: const EdgeInsets.only(top: 40.0),
+            child: Text(
+              title,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
           ),
+        );
+
+        conjugationChildren.add(
+          ConjugationTable(conjugatedTense: tenseMap, mood: mood),
         );
       });
     });
