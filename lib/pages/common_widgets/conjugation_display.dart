@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:french_verbs/models/enums.dart';
-import 'package:french_verbs/utilities/utilities.dart';
+import "package:french_verbs/pages/common_widgets/conjugation_table.dart";
 
 class ConjugationDisplay extends StatelessWidget {
   final Map<FORM, List<String>?>? conjugatedTense;
-  final String mood;
-  final String tense;
+  final MOOD mood;
   final String title;
   final bool isRevealed;
   final bool isExpanded;
@@ -13,8 +12,7 @@ class ConjugationDisplay extends StatelessWidget {
   const ConjugationDisplay({
     super.key,
     required this.conjugatedTense,
-    this.mood = "indicatif",
-    this.tense = "présent",
+    this.mood = MOOD.indicative,
     this.title = "Conjugation",
     this.isRevealed = false,
     this.isExpanded = false,
@@ -22,65 +20,9 @@ class ConjugationDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Build rows from the map
-    List<DataRow> rows = [];
-
-    if (conjugatedTense != null) {
-      conjugatedTense!.forEach((form, list) {
-        String label = form.french;
-
-        if (form == FORM.je && startsWithVowel(list?.first ?? '')) {
-          label = "j'";
-        }
-        if (mood == MOOD.subjunctive.french) {
-          if (startsWithVowel(label)) {
-            label = "qu'$label";
-          } else {
-            label = "que $label";
-          }
-        }
-
-        if (list == null || list.isEmpty) {
-          // This shouldn't happen
-          rows.add(
-            DataRow(cells: [DataCell(Text(label)), DataCell(Text('-'))]),
-          );
-        } else {
-          // If list has multiple entries, show them joined
-          rows.add(
-            DataRow(
-              cells: [
-                DataCell(
-                  Container(
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      label,
-                      style: TextStyle(fontStyle: FontStyle.italic),
-                      textAlign: TextAlign.end,
-                    ),
-                  ),
-                ),
-                DataCell(
-                  Text(
-                    list.join(', '),
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ],
-            ),
-          );
-        }
-      });
-    }
-
-    DataTable conjugationTable = DataTable(
-      headingRowHeight: 0,
-      dividerThickness: 0,
-      columns: const <DataColumn>[
-        DataColumn(label: Text('')),
-        DataColumn(label: Text('')),
-      ],
-      rows: rows,
+    ConjugationTable conjugationTable = ConjugationTable(
+      conjugatedTense: conjugatedTense,
+      mood: mood,
     );
 
     return Visibility(
@@ -88,7 +30,6 @@ class ConjugationDisplay extends StatelessWidget {
       child: ExpansionTile(
         initiallyExpanded: isExpanded,
         title: Text(title),
-        // subtitle: Text(''),
         children: <Widget>[conjugationTable],
       ),
     );

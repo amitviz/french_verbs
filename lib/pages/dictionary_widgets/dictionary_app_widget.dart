@@ -104,7 +104,7 @@ class _DictionaryAppWidgetState extends State<DictionaryAppWidget> {
       }
     } else {
       setState(() {
-        _errorText = "No matching term found.";
+        _errorText = "No matching verbs found.";
       });
     }
   }
@@ -122,8 +122,7 @@ class _DictionaryAppWidgetState extends State<DictionaryAppWidget> {
         conjugationChildren.add(
           ConjugationDisplay(
             conjugatedTense: tenseMap,
-            mood: mood.french,
-            tense: tense.french,
+            mood: mood,
             title: title,
             isRevealed: true,
             isExpanded: true,
