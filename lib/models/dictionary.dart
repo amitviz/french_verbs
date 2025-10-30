@@ -8,6 +8,9 @@ import "conjugation.dart";
 import "enums.dart";
 
 class Dictionary {
+  // cached future so load() only does the IO/parsing once
+  static Future<Dictionary>? _cachedLoad;
+
   final String verbsFile = "assets/dictionaries/verbs.json";
   final String conjugationsFile = "assets/dictionaries/conjugations.json";
   late Map<String, Verb> verbs;
@@ -352,10 +355,14 @@ class Dictionary {
     }
   }
 
+  static Future<Dictionary> load() {
+    return _cachedLoad ??= _loadFromAssets();
+  }
+
   // private constructor
   Dictionary._();
 
-  static Future<Dictionary> load() async {
+  static Future<Dictionary> _loadFromAssets() async {
     final dict = Dictionary._();
 
     final verbsJsonString = await rootBundle.loadString(dict.verbsFile);

@@ -44,7 +44,6 @@ class _VerbAppWidgetState extends State<VerbAppWidget> with RouteAware {
   final TextEditingController _inputController = TextEditingController();
   final FocusNode _inputFocusNode = FocusNode();
 
-  // final dictionary = await Dictionary.load();
   Dictionary? dictionary;
   bool _dictionaryLoaded = false;
   Map<FORM, List<String>?>? conjugatedTense;
