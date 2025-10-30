@@ -22,6 +22,7 @@ class _DictionaryAppWidgetState extends State<DictionaryAppWidget> {
 
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _inputFocusNode = FocusNode();
+  final GlobalKey _inputKey = GlobalKey();
 
   @override
   void initState() {
@@ -47,8 +48,39 @@ class _DictionaryAppWidgetState extends State<DictionaryAppWidget> {
           _currentVerb = candidateVerbs[0];
         });
       } else {
-        // more than one possible verb
-        debugPrint('Multiple possible verbs found: $candidateVerbs');
+        // more than one possible verb: show a dropdown below the input
+        _inputFocusNode.unfocus();
+
+        // compute the position of the input widget so we can anchor the menu
+        if (_inputKey.currentContext != null) {
+          final RenderBox box =
+              _inputKey.currentContext!.findRenderObject() as RenderBox;
+          final Offset position = box.localToGlobal(Offset.zero);
+          final RelativeRect positionRect = RelativeRect.fromLTRB(
+            position.dx,
+            position.dy + box.size.height,
+            position.dx + box.size.width,
+            position.dy,
+          );
+
+          showMenu<String>(
+            context: context,
+            position: positionRect,
+            items: candidateVerbs.map((verb) {
+              return PopupMenuItem<String>(value: verb, child: Text(verb));
+            }).toList(),
+          ).then((selected) {
+            if (selected != null) {
+              setState(() {
+                _currentVerb = selected;
+                _errorText = null;
+              });
+            }
+          });
+        } else {
+          // fallback: if we can't compute position, log and pick first
+          debugPrint('Could not determine input position for dropdown.');
+        }
       }
     } else {
       setState(() {
@@ -65,6 +97,7 @@ class _DictionaryAppWidgetState extends State<DictionaryAppWidget> {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: InputWidget(
+              key: _inputKey,
               controller: _searchController,
               focusNode: _inputFocusNode,
               onSubmit: _handleSubmit,
