@@ -3,6 +3,9 @@ import 'dart:convert';
 import "term.dart";
 
 class ReverseDictionary {
+  // cached future so load() only does the IO/parsing once
+  static Future<ReverseDictionary>? _cachedLoad;
+
   final String rDictionaryFile = "assets/dictionaries/reverse_dictionary.json";
   late Map<String, Term> terms;
 
@@ -21,10 +24,14 @@ class ReverseDictionary {
     );
   }
 
+  static Future<ReverseDictionary> load() {
+    return _cachedLoad ??= _loadFromAssets();
+  }
+
   // private constructor
   ReverseDictionary._();
 
-  static Future<ReverseDictionary> load() async {
+  static Future<ReverseDictionary> _loadFromAssets() async {
     final rDict = ReverseDictionary._();
 
     final rDictJsonString = await rootBundle.loadString(rDict.rDictionaryFile);
