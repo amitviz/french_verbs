@@ -1,10 +1,12 @@
 import "package:flutter/material.dart";
 import "package:french_verbs/models/dictionary.dart";
 import "package:french_verbs/models/reverse_dictionary.dart";
+import "package:french_verbs/pages/common_widgets/conjugation_display.dart";
 import "package:french_verbs/pages/dictionary_widgets/input.dart";
 import "package:french_verbs/pages/dictionary_widgets/input_button.dart";
 import "package:french_verbs/pages/verb_widgets/verb_display.dart";
 import "package:french_verbs/pages/verb_widgets/definition.dart";
+import "package:french_verbs/models/enums.dart";
 
 class DictionaryAppWidget extends StatefulWidget {
   const DictionaryAppWidget({super.key});
@@ -22,6 +24,7 @@ class _DictionaryAppWidgetState extends State<DictionaryAppWidget> {
   String? _currentVerb;
   String _definition = "";
   bool _definitionIsRevealed = false;
+  Widget? _conjugations;
 
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _inputFocusNode = FocusNode();
@@ -58,6 +61,7 @@ class _DictionaryAppWidgetState extends State<DictionaryAppWidget> {
               "No definition available";
           _definitionIsRevealed = true;
         });
+        _buildConjugations();
       } else {
         // more than one possible verb: show a dropdown below the input
         _inputFocusNode.unfocus();
@@ -90,6 +94,7 @@ class _DictionaryAppWidgetState extends State<DictionaryAppWidget> {
                     "No definition available";
                 _definitionIsRevealed = true;
               });
+              _buildConjugations();
             }
           });
         } else {
@@ -102,6 +107,33 @@ class _DictionaryAppWidgetState extends State<DictionaryAppWidget> {
         _errorText = "No matching term found.";
       });
     }
+  }
+
+  void _buildConjugations() {
+    Map<MOOD, Map<TENSE, Map<FORM, List<String>?>>>? currentConjugation =
+        dictionary?.conjugateVerb(_currentVerb ?? "");
+
+    // Build a mutable list of children first, then construct the Column.
+    List<Widget> conjugationChildren = [];
+    currentConjugation?.forEach((mood, moodMap) {
+      moodMap.forEach((tense, tenseMap) {
+        // debugPrint('Mood: $mood, Tense: $tense');
+        String title = '${mood.french} - ${tense.french}';
+        conjugationChildren.add(
+          ConjugationDisplay(
+            conjugatedTense: tenseMap,
+            mood: mood.french,
+            tense: tense.french,
+            title: title,
+            isRevealed: true,
+            isExpanded: true,
+          ),
+        );
+      });
+    });
+    setState(() {
+      _conjugations = Column(children: conjugationChildren);
+    });
   }
 
   @override
@@ -131,6 +163,7 @@ class _DictionaryAppWidgetState extends State<DictionaryAppWidget> {
           isRevealed: _definitionIsRevealed,
           onTap: () {},
         ),
+        _conjugations ?? Container(),
       ],
     );
   }
