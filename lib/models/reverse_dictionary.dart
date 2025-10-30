@@ -1,0 +1,36 @@
+import 'package:flutter/services.dart' show rootBundle;
+import 'dart:convert';
+import "term.dart";
+
+class ReverseDictionary {
+  final String rDictionaryFile = "assets/dictionaries/reverse_dictionary.json";
+  late Map<String, Term> terms;
+
+  Map<String, Term> _parseTerms(dynamic decoded) {
+    if (decoded is Map<String, dynamic>) {
+      return decoded.map((k, v) => MapEntry(k, Term.fromJson(v)));
+    }
+
+    if (decoded is List) {
+      final map = <String, Term>{};
+      return map;
+    }
+
+    throw FormatException(
+      'Unexpected JSON structure for reverse_dictionary.json: ${decoded.runtimeType}',
+    );
+  }
+
+  // private constructor
+  ReverseDictionary._();
+
+  static Future<ReverseDictionary> load() async {
+    final rDict = ReverseDictionary._();
+
+    final rDictJsonString = await rootBundle.loadString(rDict.rDictionaryFile);
+    final rDictJson = jsonDecode(rDictJsonString);
+    rDict.terms = rDict._parseTerms(rDictJson);
+
+    return rDict;
+  }
+}
