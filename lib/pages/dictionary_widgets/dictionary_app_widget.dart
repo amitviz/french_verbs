@@ -1,8 +1,10 @@
 import "package:flutter/material.dart";
+import "package:french_verbs/models/dictionary.dart";
 import "package:french_verbs/models/reverse_dictionary.dart";
-import "package:french_verbs/models/term.dart";
 import "package:french_verbs/pages/dictionary_widgets/input.dart";
 import "package:french_verbs/pages/dictionary_widgets/input_button.dart";
+import "package:french_verbs/pages/verb_widgets/verb_display.dart";
+import "package:french_verbs/pages/verb_widgets/definition.dart";
 
 class DictionaryAppWidget extends StatefulWidget {
   const DictionaryAppWidget({super.key});
@@ -14,11 +16,12 @@ class DictionaryAppWidget extends StatefulWidget {
 class _DictionaryAppWidgetState extends State<DictionaryAppWidget> {
   ReverseDictionary? rDictionary;
   bool _rDictionaryLoaded = false;
+  Dictionary? dictionary;
+  bool _dictionaryLoaded = false;
   String? _errorText;
   String? _currentVerb;
-  // List<String> _matchedKeys = [];
-  // List<String> _resultVerbs = [];
-  // String? _message;
+  String _definition = "";
+  bool _definitionIsRevealed = false;
 
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _inputFocusNode = FocusNode();
@@ -33,6 +36,12 @@ class _DictionaryAppWidgetState extends State<DictionaryAppWidget> {
         _rDictionaryLoaded = true;
       });
     });
+    Dictionary.load().then((dict) {
+      setState(() {
+        dictionary = dict;
+        _dictionaryLoaded = true;
+      });
+    });
   }
 
   void _handleSubmit() {
@@ -40,12 +49,14 @@ class _DictionaryAppWidgetState extends State<DictionaryAppWidget> {
     List<String>? candidateVerbs = rDictionary?.terms[searchTerm]?.verbs;
 
     if (candidateVerbs != null) {
-      setState(() {
-        _errorText = null;
-      });
       if (candidateVerbs.length == 1) {
         setState(() {
+          _errorText = null;
           _currentVerb = candidateVerbs[0];
+          _definition =
+              dictionary?.verbs[_currentVerb!]?.definitions.join(" • ") ??
+              "No definition available";
+          _definitionIsRevealed = true;
         });
       } else {
         // more than one possible verb: show a dropdown below the input
@@ -72,8 +83,12 @@ class _DictionaryAppWidgetState extends State<DictionaryAppWidget> {
           ).then((selected) {
             if (selected != null) {
               setState(() {
-                _currentVerb = selected;
                 _errorText = null;
+                _currentVerb = selected;
+                _definition =
+                    dictionary?.verbs[_currentVerb!]?.definitions.join(" • ") ??
+                    "No definition available";
+                _definitionIsRevealed = true;
               });
             }
           });
@@ -91,21 +106,31 @@ class _DictionaryAppWidgetState extends State<DictionaryAppWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
       children: [
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: InputWidget(
-              key: _inputKey,
-              controller: _searchController,
-              focusNode: _inputFocusNode,
-              onSubmit: _handleSubmit,
-              errorText: _errorText,
+        Row(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: InputWidget(
+                  key: _inputKey,
+                  controller: _searchController,
+                  focusNode: _inputFocusNode,
+                  onSubmit: _handleSubmit,
+                  errorText: _errorText,
+                ),
+              ),
             ),
-          ),
+            InputButtonWidget(onSubmit: _handleSubmit),
+          ],
         ),
-        InputButtonWidget(onSubmit: _handleSubmit),
+        VerbDisplayWidget(verb: _currentVerb ?? "", onTap: () {}),
+        DefinitionWidget(
+          definition: _definition,
+          isRevealed: _definitionIsRevealed,
+          onTap: () {},
+        ),
       ],
     );
   }
