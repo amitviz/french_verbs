@@ -150,8 +150,8 @@ class _DictionaryAppWidgetState extends State<DictionaryAppWidget> {
             title: Text(
               mood.french,
               style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+                // fontSize: 18,
+                // fontWeight: FontWeight.bold,
                 color: Theme.of(context).colorScheme.primary,
               ),
             ),

@@ -59,7 +59,7 @@ class ConjugationTable extends StatelessWidget {
                     list.join(', '),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.tertiary,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                 ),
