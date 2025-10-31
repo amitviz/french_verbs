@@ -144,25 +144,28 @@ class _DictionaryAppWidgetState extends State<DictionaryAppWidget> {
       }
 
       conjugationChildren.add(
-        ExpansionTile(
-          title: Text(
-            mood.french,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          initiallyExpanded: true,
-          children: [
-            GridView.count(
-              primary: false,
-              padding: const EdgeInsets.all(0),
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              crossAxisSpacing: 0,
-              mainAxisSpacing: 0,
-              crossAxisCount: 2,
-              childAspectRatio: aspectRatio,
-              children: gridViewChildren,
+        Theme(
+          data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+          child: ExpansionTile(
+            title: Text(
+              mood.french,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-          ],
+            initiallyExpanded: true,
+            children: [
+              GridView.count(
+                primary: false,
+                padding: const EdgeInsets.all(0),
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                crossAxisSpacing: 0,
+                mainAxisSpacing: 0,
+                crossAxisCount: 2,
+                childAspectRatio: aspectRatio,
+                children: gridViewChildren,
+              ),
+            ],
+          ),
         ),
       );
     });
