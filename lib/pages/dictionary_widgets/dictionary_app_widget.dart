@@ -17,9 +17,9 @@ class DictionaryAppWidget extends StatefulWidget {
 
 class _DictionaryAppWidgetState extends State<DictionaryAppWidget> {
   ReverseDictionary? rDictionary;
-  bool _rDictionaryLoaded = false;
+  // bool _rDictionaryLoaded = false;
   Dictionary? dictionary;
-  bool _dictionaryLoaded = false;
+  // bool _dictionaryLoaded = false;
   String? _errorText;
   String? _currentVerb;
   String _definition = "";
@@ -36,13 +36,13 @@ class _DictionaryAppWidgetState extends State<DictionaryAppWidget> {
     ReverseDictionary.load().then((rDict) {
       setState(() {
         rDictionary = rDict;
-        _rDictionaryLoaded = true;
+        // _rDictionaryLoaded = true;
       });
     });
     Dictionary.load().then((dict) {
       setState(() {
         dictionary = dict;
-        _dictionaryLoaded = true;
+        // _dictionaryLoaded = true;
       });
     });
   }
