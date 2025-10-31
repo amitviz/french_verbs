@@ -116,23 +116,35 @@ class _DictionaryAppWidgetState extends State<DictionaryAppWidget> {
     // Build a mutable list of children first, then construct the Column.
     List<Widget> conjugationChildren = [];
     currentConjugation?.forEach((mood, moodMap) {
-      moodMap.forEach((tense, tenseMap) {
-        // debugPrint('Mood: $mood, Tense: $tense');
-        String title = '${mood.french} - ${tense.french}';
-        conjugationChildren.add(
-          Padding(
-            padding: const EdgeInsets.only(top: 40.0),
-            child: Text(
-              title,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
+      conjugationChildren.add(
+        Padding(
+          padding: const EdgeInsets.only(top: 40.0),
+          child: Text(
+            mood.french,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-        );
-
-        conjugationChildren.add(
+        ),
+      );
+      List<Widget> gridViewChildren = [];
+      moodMap.forEach((tense, tenseMap) {
+        gridViewChildren.add(
           ConjugationTable(conjugatedTense: tenseMap, mood: mood),
         );
       });
+
+      conjugationChildren.add(
+        GridView.count(
+          primary: false,
+          padding: const EdgeInsets.all(0),
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          crossAxisSpacing: 0,
+          mainAxisSpacing: 0,
+          crossAxisCount: 2,
+          childAspectRatio: 0.5,
+          children: gridViewChildren,
+        ),
+      );
     });
     setState(() {
       _conjugations = Column(children: conjugationChildren);
