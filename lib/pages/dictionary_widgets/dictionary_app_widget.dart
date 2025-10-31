@@ -116,23 +116,58 @@ class _DictionaryAppWidgetState extends State<DictionaryAppWidget> {
     // Build a mutable list of children first, then construct the Column.
     List<Widget> conjugationChildren = [];
     currentConjugation?.forEach((mood, moodMap) {
+      // conjugationChildren.add(
+      //   Padding(
+      //     padding: const EdgeInsets.only(top: 40.0),
+      //     child: Text(
+      //       mood.french,
+      //       style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      //     ),
+      //   ),
+      // );
+      List<Widget> gridViewChildren = [];
       moodMap.forEach((tense, tenseMap) {
-        // debugPrint('Mood: $mood, Tense: $tense');
-        String title = '${mood.french} - ${tense.french}';
-        conjugationChildren.add(
-          Padding(
-            padding: const EdgeInsets.only(top: 40.0),
-            child: Text(
-              title,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
+        gridViewChildren.add(
+          ConjugationTable(
+            conjugatedTense: tenseMap,
+            mood: mood,
+            title: tense.french,
           ),
         );
-
-        conjugationChildren.add(
-          ConjugationTable(conjugatedTense: tenseMap, mood: mood),
-        );
       });
+
+      double aspectRatio = 0.6;
+      if ([MOOD.imperative].contains(mood)) {
+        aspectRatio = 1.0;
+      } else if ([MOOD.participle, MOOD.infinitive].contains(mood)) {
+        aspectRatio = 3.0;
+      }
+
+      conjugationChildren.add(
+        Theme(
+          data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+          child: ExpansionTile(
+            title: Text(
+              mood.french,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            initiallyExpanded: true,
+            children: [
+              GridView.count(
+                primary: false,
+                padding: const EdgeInsets.all(0),
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                crossAxisSpacing: 0,
+                mainAxisSpacing: 0,
+                crossAxisCount: 2,
+                childAspectRatio: aspectRatio,
+                children: gridViewChildren,
+              ),
+            ],
+          ),
+        ),
+      );
     });
     setState(() {
       _conjugations = Column(children: conjugationChildren);
