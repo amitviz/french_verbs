@@ -149,7 +149,11 @@ class _DictionaryAppWidgetState extends State<DictionaryAppWidget> {
           child: ExpansionTile(
             title: Text(
               mood.french,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.primary,
+              ),
             ),
             initiallyExpanded: true,
             children: [
