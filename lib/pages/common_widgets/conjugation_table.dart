@@ -67,24 +67,27 @@ class ConjugationTable extends StatelessWidget {
       });
     }
 
-    debugPrint(title);
     DataTable conjugationTable = DataTable(
-      headingRowHeight: (title != null) ? null : 0,
+      headingRowHeight: 0,
       dividerThickness: 0,
       columnSpacing: 6,
       horizontalMargin: 4,
       columns: <DataColumn>[
         DataColumn(label: Text('')),
-        DataColumn(
-          label: Text(
-            title?.toUpperCase() ?? "",
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-        ),
+        DataColumn(label: Text('')),
       ],
       rows: rows,
     );
 
-    return conjugationTable;
+    return Column(
+      children: [
+        Text(
+          title?.toUpperCase() ?? "",
+          style: TextStyle(fontWeight: FontWeight.bold),
+          textAlign: TextAlign.start,
+        ),
+        conjugationTable,
+      ],
+    );
   }
 }

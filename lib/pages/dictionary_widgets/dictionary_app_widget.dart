@@ -136,6 +136,13 @@ class _DictionaryAppWidgetState extends State<DictionaryAppWidget> {
         );
       });
 
+      double aspectRatio = 0.6;
+      if ([MOOD.imperative].contains(mood)) {
+        aspectRatio = 1.0;
+      } else if ([MOOD.participle, MOOD.infinitive].contains(mood)) {
+        aspectRatio = 3.0;
+      }
+
       conjugationChildren.add(
         GridView.count(
           primary: false,
@@ -145,7 +152,7 @@ class _DictionaryAppWidgetState extends State<DictionaryAppWidget> {
           crossAxisSpacing: 0,
           mainAxisSpacing: 0,
           crossAxisCount: 2,
-          childAspectRatio: 0.5,
+          childAspectRatio: aspectRatio,
           children: gridViewChildren,
         ),
       );
