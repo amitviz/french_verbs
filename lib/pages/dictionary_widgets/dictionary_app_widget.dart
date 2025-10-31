@@ -128,7 +128,11 @@ class _DictionaryAppWidgetState extends State<DictionaryAppWidget> {
       List<Widget> gridViewChildren = [];
       moodMap.forEach((tense, tenseMap) {
         gridViewChildren.add(
-          ConjugationTable(conjugatedTense: tenseMap, mood: mood),
+          ConjugationTable(
+            conjugatedTense: tenseMap,
+            mood: mood,
+            title: tense.french,
+          ),
         );
       });
 
