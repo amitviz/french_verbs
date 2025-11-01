@@ -57,7 +57,10 @@ class ConjugationTable extends StatelessWidget {
                 DataCell(
                   Text(
                     list.join(', '),
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
                 ),
               ],
@@ -83,7 +86,10 @@ class ConjugationTable extends StatelessWidget {
       children: [
         Text(
           title?.toUpperCase() ?? "",
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.secondary,
+          ),
           textAlign: TextAlign.start,
         ),
         conjugationTable,
