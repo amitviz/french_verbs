@@ -18,11 +18,11 @@ The *Dictionary* app lets you look up a specific verb to get all the conjugation
 
 ## Screenshots
 
-![Verb quiz](assets/screenshots/01_verb_quiz.png "Verb quiz")
-![Answer with full conjugation shown](assets/screenshots/02_verb_quiz_answer.png "Answer with full conjugation shown")
-![Verb lists](assets/screenshots/03_settings_verb_lists.png "Verb lists")
-![Tense selection](assets/screenshots/04_settings_tense_selection.png "Tense selection")
-![Dictionary](assets/screenshots/05_dictionary.png "Dictionary")
+<img src="assets/screenshots/01_verb_quiz.png" width="150">
+<img src="assets/screenshots/02_verb_quiz_answer.png" width="150">
+<img src="assets/screenshots/03_settings_verb_lists.png" width="150">
+<img src="assets/screenshots/04_settings_tense_selection.png" width="150">
+<img src="assets/screenshots/05_dictionary.png" width="150">
 
 ## Motivation
 
