@@ -5,11 +5,13 @@ import "package:french_verbs/utilities/utilities.dart";
 class ConjugationTable extends StatelessWidget {
   final Map<FORM, List<String>?>? conjugatedTense;
   final MOOD mood;
+  final String? title;
 
   const ConjugationTable({
     super.key,
     required this.conjugatedTense,
     this.mood = MOOD.indicative,
+    this.title,
   });
 
   @override
@@ -55,7 +57,10 @@ class ConjugationTable extends StatelessWidget {
                 DataCell(
                   Text(
                     list.join(', '),
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
                 ),
               ],
@@ -68,13 +73,27 @@ class ConjugationTable extends StatelessWidget {
     DataTable conjugationTable = DataTable(
       headingRowHeight: 0,
       dividerThickness: 0,
-      columns: const <DataColumn>[
+      columnSpacing: 6,
+      horizontalMargin: 4,
+      columns: <DataColumn>[
         DataColumn(label: Text('')),
         DataColumn(label: Text('')),
       ],
       rows: rows,
     );
 
-    return conjugationTable;
+    return Column(
+      children: [
+        Text(
+          title?.toUpperCase() ?? "",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.secondary,
+          ),
+          textAlign: TextAlign.start,
+        ),
+        conjugationTable,
+      ],
+    );
   }
 }
