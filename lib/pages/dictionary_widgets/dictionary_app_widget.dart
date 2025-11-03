@@ -48,7 +48,7 @@ class _DictionaryAppWidgetState extends State<DictionaryAppWidget> {
   }
 
   void _handleSubmit() {
-    String searchTerm = _searchController.text.toLowerCase();
+    String searchTerm = _searchController.text.trim().toLowerCase();
     List<String>? candidateVerbs = rDictionary?.terms[searchTerm]?.verbs;
 
     if (candidateVerbs != null) {

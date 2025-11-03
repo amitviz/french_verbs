@@ -107,7 +107,7 @@ class _VerbAppWidgetState extends State<VerbAppWidget> with RouteAware {
       // Answer mode - check the answer and reveal the definition
 
       final isCorrect = _correctAnswers.any(
-        (ans) => ans.trim().toLowerCase() == _inputController.text,
+        (ans) => ans.trim().toLowerCase() == _inputController.text.trim(),
       );
 
       setState(() {
