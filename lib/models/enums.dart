@@ -171,6 +171,7 @@ enum TENSE {
       FORM.ilsElles,
     ],
   ),
+
   futurproche(
     value: 'futurproche',
     french: "futur proche",
@@ -263,9 +264,55 @@ enum TENSE {
       FORM.ilsElles,
     ],
   ),
+  futureanterieur(
+    value: 'future-anterieur',
+    french: "futur antérieur",
+    forms: [
+      FORM.je,
+      FORM.tu,
+      FORM.il,
+      FORM.elle,
+      FORM.on,
+      FORM.nous,
+      FORM.vous,
+      FORM.ils,
+      FORM.elles,
+    ],
+    conjugationForms: [
+      FORM.je,
+      FORM.tu,
+      FORM.ilElleOn,
+      FORM.nous,
+      FORM.vous,
+      FORM.ilsElles,
+    ],
+  ),
   pastSimple(
     value: 'simple-past',
     french: "passé simple",
+    forms: [
+      FORM.je,
+      FORM.tu,
+      FORM.il,
+      FORM.elle,
+      FORM.on,
+      FORM.nous,
+      FORM.vous,
+      FORM.ils,
+      FORM.elles,
+    ],
+    conjugationForms: [
+      FORM.je,
+      FORM.tu,
+      FORM.ilElleOn,
+      FORM.nous,
+      FORM.vous,
+      FORM.ilsElles,
+    ],
+  ),
+  passeanterieur(
+    value: 'passe-anterieur',
+    french: "passé antérieur",
     forms: [
       FORM.je,
       FORM.tu,
@@ -377,9 +424,11 @@ enum MOOD {
       TENSE.futurproche,
       TENSE.passerecent,
       TENSE.imperfect,
-      TENSE.future,
-      TENSE.pastSimple,
       TENSE.plusqueparfait,
+      TENSE.future,
+      TENSE.futureanterieur,
+      TENSE.pastSimple,
+      TENSE.passeanterieur,
     ],
   ),
   imperative(
@@ -400,7 +449,7 @@ enum MOOD {
   subjunctive(
     value: 'subjunctive',
     french: "subjonctif",
-    tenses: [TENSE.present, TENSE.imperfect, TENSE.passe],
+    tenses: [TENSE.present, TENSE.imperfect, TENSE.passe, TENSE.plusqueparfait],
   );
 
   const MOOD({required this.value, required this.french, required this.tenses});

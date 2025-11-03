@@ -93,6 +93,8 @@ class Dictionary {
       TENSE.plusqueparfait,
       TENSE.passe,
       TENSE.imperativepasse,
+      TENSE.passeanterieur,
+      TENSE.futureanterieur,
     ].contains(tense)) {
       // avoir and etre verbs, with agreement where necessary
       String auxiliaryVerb = verbs[verb]?.auxiliary ?? "avoir";
@@ -104,6 +106,10 @@ class Dictionary {
         auxiliaryTense = TENSE.imperative;
       } else if ([TENSE.plusqueparfait].contains(tense)) {
         auxiliaryTense = TENSE.imperfect;
+      } else if ([TENSE.passeanterieur].contains(tense)) {
+        auxiliaryTense = TENSE.pastSimple;
+      } else if ([TENSE.futureanterieur].contains(tense)) {
+        auxiliaryTense = TENSE.future;
       } else {
         // case for passe compose, conditional passe, subjunctive passe
         auxiliaryTense = TENSE.present;
