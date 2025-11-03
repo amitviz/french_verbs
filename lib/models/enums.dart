@@ -96,6 +96,12 @@ enum TENSE {
     forms: [FORM.infinitive],
     conjugationForms: [FORM.infinitive],
   ),
+  infinitivepast(
+    value: 'infinitive-past',
+    french: "passé",
+    forms: [FORM.infinitive],
+    conjugationForms: [FORM.infinitive],
+  ),
   present(
     value: 'present',
     french: "présent",
@@ -360,7 +366,7 @@ enum MOOD {
   infinitive(
     value: 'infinitive',
     french: "infinitif",
-    tenses: [TENSE.infinitive],
+    tenses: [TENSE.infinitive, TENSE.infinitivepast],
   ),
   indicative(
     value: 'indicative',

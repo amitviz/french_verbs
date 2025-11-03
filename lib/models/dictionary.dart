@@ -88,6 +88,7 @@ class Dictionary {
 
     List<String> conjugatedVariants = [];
     if ([
+      TENSE.infinitivepast,
       TENSE.passecompose,
       TENSE.plusqueparfait,
       TENSE.passe,
@@ -97,7 +98,9 @@ class Dictionary {
       String auxiliaryVerb = verbs[verb]?.auxiliary ?? "avoir";
 
       TENSE auxiliaryTense;
-      if ([TENSE.imperativepasse].contains(tense)) {
+      if ([TENSE.infinitivepast].contains(tense)) {
+        auxiliaryTense = TENSE.infinitive;
+      } else if ([TENSE.imperativepasse].contains(tense)) {
         auxiliaryTense = TENSE.imperative;
       } else if ([TENSE.plusqueparfait].contains(tense)) {
         auxiliaryTense = TENSE.imperfect;
