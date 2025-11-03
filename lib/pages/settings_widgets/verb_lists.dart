@@ -58,7 +58,7 @@ class _VerbListsState extends State<VerbLists> {
     if (list == null || list.isEmpty) return; // No saved prefs — keep defaults.
 
     setState(() {
-      if (list.length > 0) a1Checked = list[0] == 'true';
+      if (list.isNotEmpty) a1Checked = list[0] == 'true';
       if (list.length > 1) a2Checked = list[1] == 'true';
       if (list.length > 2) b1Checked = list[2] == 'true';
       if (list.length > 3) b2Checked = list[3] == 'true';

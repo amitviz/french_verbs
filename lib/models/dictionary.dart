@@ -176,7 +176,7 @@ class Dictionary {
 
       conjugatedVariants = List.from(
         variants,
-      ).map((v) => "${verbRoot}${v}").toList();
+      ).map((v) => "$verbRoot$v").toList();
     }
 
     // print("${verb}: ${verbs[verb]}");
