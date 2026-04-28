@@ -36,7 +36,6 @@ jobs:
         with:
           channel: stable
           cache: true
-          android: true
 
       - name: Install dependencies
         run: flutter pub get
@@ -51,6 +50,6 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ github.ref_name }}
-          files: build/app/outputs/flutter-apk/*.apk
+          artifacts: "build/app/outputs/flutter-apk/*.apk,build/app/outputs/flutter-apk/*.sha1"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
