@@ -8,36 +8,6 @@ class VerbApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("")),
-      drawer: Drawer(
-        child: Column(
-          children: [
-            DrawerHeader(child: Icon(Icons.chat)),
-            ListTile(
-              leading: Icon(Icons.home),
-              title: Text("Home"),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.book),
-              title: Text("Dictionary"),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/dictionnaire');
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.settings),
-              title: Text("Settings"),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/settings');
-              },
-            ),
-          ],
-        ),
-      ),
       body: SingleChildScrollView(child: VerbAppWidget()),
     );
   }

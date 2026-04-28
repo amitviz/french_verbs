@@ -12,7 +12,7 @@ class SettingsApp extends StatelessWidget {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Settings"),
+          title: Text("Paramètres"),
           actions: [IconButton(icon: Icon(Icons.save), onPressed: () {})],
           bottom: const TabBar(
             tabs: <Widget>[
@@ -25,7 +25,7 @@ class SettingsApp extends StatelessWidget {
         body: const TabBarView(
           children: <Widget>[
             VerbLists(),
-            Center(child: Text("Custom verbs")),
+            Center(child: Text("Verbes personnalisés")),
             MoodsTenses(),
           ],
         ),
