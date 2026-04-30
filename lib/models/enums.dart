@@ -449,7 +449,7 @@ enum MOOD {
   subjunctive(
     value: 'subjunctive',
     french: "subjonctif",
-    tenses: [TENSE.present, TENSE.imperfect, TENSE.passe, TENSE.plusqueparfait],
+    tenses: [TENSE.present, TENSE.passe, TENSE.imperfect, TENSE.plusqueparfait],
   );
 
   const MOOD({required this.value, required this.french, required this.tenses});
