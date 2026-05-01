@@ -53,3 +53,12 @@ jobs:
           artifacts: "build/app/outputs/flutter-apk/*.apk,build/app/outputs/flutter-apk/*.sha1"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish WebApp
+        uses: bluefireteam/flutter-gh-pages@v9
+        with:
+          compileToWasm: true
+          targetBranch: gh-pages
+          baseHref: /french_verbs/
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
