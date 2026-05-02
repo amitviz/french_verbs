@@ -49,7 +49,10 @@ class ConjugationTable extends StatelessWidget {
                     alignment: Alignment.centerRight,
                     child: Text(
                       label,
-                      style: TextStyle(fontStyle: FontStyle.italic),
+                      style: TextStyle(
+                        fontStyle: FontStyle.italic,
+                        fontFamily: "CharisSIL",
+                      ),
                       textAlign: TextAlign.end,
                     ),
                   ),

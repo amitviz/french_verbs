@@ -24,3 +24,15 @@ flutter:
     - assets/dictionaries/conjugations.json
     - assets/verb_lists/verb_lists.json
     - assets/dictionaries/reverse_dictionary.json
+
+  fonts:
+    - family: CharisSIL
+      fonts:
+        - asset: fonts/CharisSIL-Regular.ttf
+        - asset: fonts/CharisSIL-Italic.ttf
+          style: italic
+        - asset: fonts/CharisSIL-Bold.ttf
+          weight: 700
+        - asset: fonts/CharisSIL-BoldItalic.ttf
+          weight: 700
+          style: italic

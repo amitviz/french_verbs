@@ -16,7 +16,10 @@ class VerbDisplayWidget extends StatelessWidget {
       padding: EdgeInsets.all(16.0),
       child: TextButton(
         onPressed: _handleTap,
-        child: Text(verb, style: TextStyle(fontFamily: "serif", fontSize: 40)),
+        child: Text(
+          verb,
+          style: TextStyle(fontFamily: "CharisSIL", fontSize: 40),
+        ),
       ),
     );
   }
